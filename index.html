@@ -3,8 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>早得クーポン | HAYA-TOKU（仮）</title>
-  <meta name="description" content="早く使うほど割引率がお得な「早得クーポン」仮ページ" />
+  <title>早得クーポン | HAYA-TOKU（LIFF）</title>
+  <meta name="description" content="早く使うほど割引率がお得な「早得クーポン」LIFFサンプル" />
+
+  <!-- LIFF SDK（公式） -->
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 
   <style>
     :root{
@@ -17,7 +20,6 @@
       --shadow:0 14px 30px rgba(0,0,0,.10);
       --radius:18px;
 
-      /* Safe area (iPhone notch) */
       --sat: env(safe-area-inset-top, 0px);
       --sab: env(safe-area-inset-bottom, 0px);
     }
@@ -32,14 +34,15 @@
       text-rendering: optimizeLegibility;
     }
     a{color:inherit}
+
     .app{
       max-width: 520px;
       margin: 0 auto;
       min-height: 100dvh;
-      padding-bottom: calc(92px + var(--sab)); /* bottom bar space */
+      padding-bottom: calc(108px + var(--sab)); /* bottom bar space */
     }
 
-    /* ===== LINEっぽいヘッダー ===== */
+    /* ===== topbar ===== */
     .topbar{
       position: sticky;
       top: 0;
@@ -66,13 +69,15 @@
       background: rgba(255,255,255,.18);
       border: 1px solid rgba(255,255,255,.22);
       display:grid;place-items:center;
-      font-weight:900;
+      font-weight:1000;
       letter-spacing:.3px;
+      overflow:hidden;
     }
+    .avatar img{width:100%;height:100%;object-fit:cover;display:block}
     .titlewrap{min-width:0}
     .appname{
       font-size: 14px;
-      font-weight: 900;
+      font-weight: 1000;
       line-height: 1.15;
       white-space:nowrap;
       overflow:hidden;
@@ -109,7 +114,7 @@
       stroke-linecap: round; stroke-linejoin: round;
     }
 
-    /* ===== トーク風エリア ===== */
+    /* ===== chat area ===== */
     .chat{
       padding: 12px 12px 0;
       display:grid;
@@ -125,7 +130,6 @@
       border-radius: 999px;
     }
 
-    /* 吹き出し */
     .bubble{
       max-width: 92%;
       border-radius: 18px;
@@ -135,10 +139,10 @@
       border: 1px solid rgba(229,231,235,.9);
       line-height: 1.55;
       font-size: 14px;
+      background:#fff;
     }
     .bubble.left{
       justify-self:start;
-      background:#fff;
       border-top-left-radius: 10px;
     }
     .bubble.left::before{
@@ -167,11 +171,11 @@
       border-top: 1px solid #b7f7c9;
       transform: rotate(45deg);
     }
-    .bubble b{font-weight:900}
+    .bubble b{font-weight:1000}
     .muted{color:var(--muted); font-size:12px}
     .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
 
-    /* ===== クーポンカード（LINEのリッチメッセージっぽく） ===== */
+    /* ===== coupon card ===== */
     .card{
       background: var(--card);
       border: 1px solid var(--border);
@@ -191,7 +195,7 @@
     .card-head h2{
       margin:0;
       font-size: 16px;
-      font-weight: 900;
+      font-weight: 1000;
       line-height: 1.25;
     }
     .pill{
@@ -222,20 +226,20 @@
     }
     .off{
       font-size: 36px;
-      font-weight: 1000;
+      font-weight: 1100;
       letter-spacing: .2px;
       color: #052e16;
     }
     .off span{
       font-size: 14px;
-      font-weight: 900;
+      font-weight: 1000;
       margin-left: 4px;
     }
     .deadline{
       text-align:right;
       font-size: 12px;
       color: #065f46;
-      font-weight: 900;
+      font-weight: 1000;
     }
     .sub{
       margin-top: 8px;
@@ -275,7 +279,7 @@
     .tag{
       width:34px;height:34px;border-radius: 10px;
       display:grid;place-items:center;
-      font-weight: 1000;
+      font-weight: 1100;
       color:#fff;
       background:#9ca3af;
       flex: 0 0 auto;
@@ -285,7 +289,7 @@
       box-shadow: 0 12px 26px rgba(6,199,85,.18);
     }
     .step.active .tag{ background: var(--line-green); }
-    .when{font-weight: 900; font-size: 13px; line-height: 1.25; white-space:nowrap}
+    .when{font-weight: 1000; font-size: 13px; line-height: 1.25; white-space:nowrap}
     .desc{
       font-size: 12px;
       color: var(--muted);
@@ -295,7 +299,7 @@
       text-overflow: ellipsis;
       max-width: 260px;
     }
-    .rate{font-weight: 1000; font-size: 16px; white-space:nowrap}
+    .rate{font-weight: 1100; font-size: 16px; white-space:nowrap}
 
     .meter{
       margin-top: 12px;
@@ -313,7 +317,7 @@
       transition: width .6s ease;
     }
 
-    /* ===== Bottom bar（LINEの入力欄っぽい固定バー） ===== */
+    /* ===== bottom bar ===== */
     .bottombar{
       position: fixed;
       left: 0; right: 0;
@@ -336,7 +340,7 @@
       border-radius: 16px;
       padding: 14px 14px;
       font-size: 15px;
-      font-weight: 1000;
+      font-weight: 1100;
       cursor: pointer;
     }
     .btn.primary{
@@ -349,13 +353,13 @@
       color: var(--text);
       border: 1px solid var(--border);
     }
-    .btn:active{transform: translateY(1px)}
-    .minirow{
-      display:flex;
-      gap:10px;
+    .btn.danger{
+      background:#111827;
+      color:#fff;
     }
+    .btn:active{transform: translateY(1px)}
+    .minirow{display:flex; gap:10px;}
 
-    /* 小さなシステム表示 */
     .sys{
       margin: 10px 12px 0;
       color: var(--muted);
@@ -379,10 +383,10 @@
     <header class="topbar">
       <div class="row">
         <div class="top-left">
-          <div class="avatar">H</div>
+          <div class="avatar" id="avatarBox">H</div>
           <div class="titlewrap">
             <div class="appname">HAYA-TOKU（早得クーポン）</div>
-            <div class="hint" id="hintText">仮ページ：LINEっぽいUIで検証中</div>
+            <div class="hint" id="hintText">起動中…</div>
           </div>
         </div>
 
@@ -413,7 +417,7 @@
       </div>
 
       <div class="bubble right">
-        いま使うと、どれくらいお得？
+        <span id="helloText">いま使うと、どれくらいお得？</span>
       </div>
 
       <section class="card" aria-label="クーポンカード">
@@ -485,13 +489,13 @@
       </section>
 
       <div class="bubble left">
-        もしこの次に進めるなら、<b>LIFFの初期化</b>を入れて<br>
-        <span class="muted">「LINEアプリ内で開いているか」「ユーザー名」</span>などを表示できます。
+        <b>状態：</b><span id="envText">--</span><br>
+        <span class="muted">※ LIFF URL（<span class="mono">liff.line.me</span>）から開くと、ユーザー名表示や共有がもっと自然になります。</span>
       </div>
 
       <div class="sys">
         <span class="chip">HAYA-TOKU</span>
-        <span class="chip">GitHub Pages</span>
+        <span class="chip" id="liffChip">LIFF: 未判定</span>
         <span class="chip" id="nowText">--</span>
       </div>
     </main>
@@ -502,11 +506,15 @@
       <button class="btn primary" id="useBtn">このクーポンを使う（サンプル）</button>
       <div class="minirow">
         <button class="btn secondary" id="shareBtn" style="width:100%">友だちに共有</button>
+        <button class="btn danger" id="closeBtn" style="width:100%">閉じる</button>
       </div>
     </div>
   </div>
 
   <script>
+    // ★ここだけ後で差し替え★（あなたのLIFF IDに置換）
+    const LIFF_ID = "YOUR_LIFF_ID_HERE";
+
     function pad2(n){ return String(n).padStart(2,'0'); }
     function formatJP(d){
       return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
@@ -518,12 +526,11 @@
       return { rate: 10, step: 3, label: "夕方の早得" };
     }
 
-    function updateUI(){
+    function updateCouponUI(){
       const now = new Date();
       const h = now.getHours();
       const info = getRateByHour(h);
 
-      // 今日の有効期限（例：当日23:59）
       const deadline = new Date(now);
       deadline.setHours(23,59,0,0);
 
@@ -536,17 +543,75 @@
       for (const id of ["s1","s2","s3"]) document.getElementById(id).classList.remove("active");
       document.getElementById(`s${info.step}`).classList.add("active");
 
-      // メーター：0:00〜24:00 の経過率
       const minutes = now.getHours()*60 + now.getMinutes();
       const pct = Math.max(0, Math.min(100, (minutes / (24*60)) * 100));
       document.getElementById("meterBar").style.width = `${pct.toFixed(1)}%`;
-
-      // ヒント（LINE内想定のメッセージ）
-      document.getElementById("hintText").textContent =
-        "仮ページ：早得ロジック＋LINE風UI（次はLIFF連携へ）";
     }
 
-    // URLコピー
+    function setHint(text){ document.getElementById("hintText").textContent = text; }
+    function setEnv(text){ document.getElementById("envText").textContent = text; }
+    function setLiffChip(text){ document.getElementById("liffChip").textContent = text; }
+
+    async function initLiff(){
+      // LIFF SDK が読めない（ネット制限等）でも落ちないように
+      if (!window.liff){
+        setHint("LIFF SDKが読み込めません（通常ブラウザ表示）");
+        setEnv("通常ブラウザで表示中（LIFF SDK未ロード）");
+        setLiffChip("LIFF: 未ロード");
+        return;
+      }
+
+      // LIFF ID 未設定でも落ちないように
+      if (!LIFF_ID || LIFF_ID === "YOUR_LIFF_ID_HERE"){
+        setHint("LIFF ID未設定：通常表示（あとでLIFF IDを入れてOK）");
+        setEnv("通常ブラウザ/仮表示（LIFF IDが未設定です）");
+        setLiffChip("LIFF: ID未設定");
+        return;
+      }
+
+      try{
+        setHint("LIFF初期化中…");
+        await liff.init({ liffId: LIFF_ID });
+
+        const inClient = liff.isInClient();
+        const loggedIn = liff.isLoggedIn();
+
+        setLiffChip(inClient ? "LIFF: LINE内" : "LIFF: 外部ブラウザ");
+
+        if (!loggedIn){
+          setHint("ログインしていません（ログインボタンで続行）");
+          setEnv(inClient
+            ? "LINE内で開いています（ログイン未）"
+            : "外部ブラウザで開いています（ログイン未）"
+          );
+          // 外部ブラウザならログイン誘導
+          if (!inClient){
+            document.getElementById("helloText").textContent = "（外部ブラウザ）ログインするとユーザー名を表示できます。";
+          }
+          return;
+        }
+
+        // プロフィール取得（LINE内/ログイン済なら取得しやすい）
+        const profile = await liff.getProfile();
+        const name = profile?.displayName || "あなた";
+        document.getElementById("helloText").textContent = `${name}さん、いま使うとどれくらいお得？`;
+
+        // アバターに画像（あれば）
+        if (profile?.pictureUrl){
+          const box = document.getElementById("avatarBox");
+          box.innerHTML = `<img alt="avatar" src="${profile.pictureUrl}">`;
+        }
+
+        setHint(inClient ? "LINE内で開いています（OK）" : "外部ブラウザで開いています（OK）");
+        setEnv(`ログイン済：${inClient ? "LINE内" : "外部ブラウザ"}で表示中`);
+      }catch(e){
+        setHint("LIFF初期化に失敗（通常表示）");
+        setEnv("LIFF初期化エラー。LIFF IDや設定を確認してください。");
+        setLiffChip("LIFF: エラー");
+      }
+    }
+
+    // ===== buttons =====
     document.getElementById("copyBtn").addEventListener("click", async () => {
       try{
         await navigator.clipboard.writeText(location.href);
@@ -556,17 +621,15 @@
       }
     });
 
-    // 情報
     document.getElementById("infoBtn").addEventListener("click", () => {
       alert(
-        "HAYA-TOKU（早得クーポン）仮ページ\n\n" +
+        "HAYA-TOKU（早得クーポン）\n\n" +
         "・朝30% / 昼20% / 夕10% のサンプル\n" +
-        "・GitHub Pagesで公開中\n" +
-        "・次はLIFF初期化（liff.init）を追加できます"
+        "・GitHub Pagesで公開\n" +
+        "・LIFF SDK入り（LIFF ID設定でプロフィール表示）"
       );
     });
 
-    // 利用（サンプル）
     document.getElementById("useBtn").addEventListener("click", () => {
       alert(
         "（サンプル）クーポン利用処理をここに実装します。\n" +
@@ -574,10 +637,19 @@
       );
     });
 
-    // 共有
     document.getElementById("shareBtn").addEventListener("click", async () => {
       const url = location.href;
       const text = "早得クーポン（サンプル）\n早く使うほどお得！";
+      try{
+        if (window.liff && liff.isInClient()){
+          // LINE内なら shareTargetPicker が使える可能性
+          await liff.shareTargetPicker([{ type: "text", text: `${text}\n${url}` }]);
+          return;
+        }
+      }catch(e){
+        // shareTargetPicker不可なら通常共有へフォールバック
+      }
+
       try{
         if (navigator.share){
           await navigator.share({ title: "早得クーポン", text, url });
@@ -588,8 +660,20 @@
       }catch(e){}
     });
 
-    updateUI();
-    setInterval(updateUI, 60 * 1000);
+    document.getElementById("closeBtn").addEventListener("click", () => {
+      try{
+        if (window.liff && liff.isInClient()){
+          liff.closeWindow();
+          return;
+        }
+      }catch(e){}
+      alert("LINE内（LIFF）で開いた時は閉じられます。今は通常ブラウザ表示なので閉じられません。");
+    });
+
+    // ===== init =====
+    updateCouponUI();
+    setInterval(updateCouponUI, 60 * 1000);
+    initLiff();
   </script>
 </body>
 </html>
