@@ -2,22 +2,27 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>早得クーポン（仮LIFF）</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>早得クーポン | HAYA-TOKU（仮）</title>
   <meta name="description" content="早く使うほど割引率がお得な「早得クーポン」仮ページ" />
 
   <style>
     :root{
       --line-green:#06c755;
-      --bg:#f2f3f5;
+      --bg:#eef0f3;
       --card:#ffffff;
-      --text:#111827;
+      --text:#0b1220;
       --muted:#6b7280;
       --border:#e5e7eb;
-      --shadow:0 10px 25px rgba(0,0,0,.08);
+      --shadow:0 14px 30px rgba(0,0,0,.10);
       --radius:18px;
+
+      /* Safe area (iPhone notch) */
+      --sat: env(safe-area-inset-top, 0px);
+      --sab: env(safe-area-inset-bottom, 0px);
     }
     *{box-sizing:border-box}
+    html,body{height:100%}
     body{
       margin:0;
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", "Meiryo", sans-serif;
@@ -28,78 +33,166 @@
     }
     a{color:inherit}
     .app{
-      max-width: 460px;
+      max-width: 520px;
       margin: 0 auto;
       min-height: 100dvh;
-      padding-bottom: 24px;
+      padding-bottom: calc(92px + var(--sab)); /* bottom bar space */
     }
 
-    /* LINEっぽいヘッダー */
+    /* ===== LINEっぽいヘッダー ===== */
     .topbar{
       position: sticky;
       top: 0;
-      z-index: 10;
+      z-index: 20;
       background: var(--line-green);
-      color: #fff;
-      padding: 14px 16px 12px;
-      box-shadow: 0 6px 18px rgba(0,0,0,.12);
+      color:#fff;
+      padding: calc(10px + var(--sat)) 14px 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,.14);
     }
     .topbar .row{
       display:flex;
       align-items:center;
+      justify-content:space-between;
       gap:10px;
     }
-    .badge{
-      display:inline-flex;
+    .top-left{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+    .avatar{
+      width:34px;height:34px;border-radius:12px;
+      background: rgba(255,255,255,.18);
+      border: 1px solid rgba(255,255,255,.22);
+      display:grid;place-items:center;
+      font-weight:900;
+      letter-spacing:.3px;
+    }
+    .titlewrap{min-width:0}
+    .appname{
+      font-size: 14px;
+      font-weight: 900;
+      line-height: 1.15;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .hint{
+      margin-top: 2px;
+      font-size: 11px;
+      opacity:.92;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .top-actions{
+      display:flex;
       align-items:center;
       gap:8px;
-      background: rgba(255,255,255,.16);
+    }
+    .iconbtn{
+      width:34px;height:34px;
+      border-radius:12px;
       border: 1px solid rgba(255,255,255,.22);
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      letter-spacing: .2px;
+      background: rgba(255,255,255,.14);
+      color:#fff;
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      font-weight:900;
     }
-    .dot{
-      width:10px;height:10px;border-radius:999px;background:#fff;
-      box-shadow: 0 0 0 3px rgba(255,255,255,.18);
-    }
-    .title{
-      margin: 10px 0 0;
-      font-size: 20px;
-      line-height: 1.25;
-      font-weight: 800;
-      letter-spacing: .2px;
-    }
-    .subtitle{
-      margin: 6px 0 0;
-      font-size: 13px;
-      opacity: .92;
-      line-height: 1.5;
+    .iconbtn:active{transform: translateY(1px)}
+    .icon{
+      width:18px;height:18px; display:block;
+      fill: none; stroke: currentColor; stroke-width: 2.2;
+      stroke-linecap: round; stroke-linejoin: round;
     }
 
-    /* カード */
+    /* ===== トーク風エリア ===== */
+    .chat{
+      padding: 12px 12px 0;
+      display:grid;
+      gap: 10px;
+    }
+    .time{
+      justify-self:center;
+      font-size: 11px;
+      color: var(--muted);
+      background: rgba(255,255,255,.55);
+      border: 1px solid rgba(229,231,235,.7);
+      padding: 6px 10px;
+      border-radius: 999px;
+    }
+
+    /* 吹き出し */
+    .bubble{
+      max-width: 92%;
+      border-radius: 18px;
+      padding: 12px 12px;
+      position: relative;
+      box-shadow: 0 8px 18px rgba(0,0,0,.06);
+      border: 1px solid rgba(229,231,235,.9);
+      line-height: 1.55;
+      font-size: 14px;
+    }
+    .bubble.left{
+      justify-self:start;
+      background:#fff;
+      border-top-left-radius: 10px;
+    }
+    .bubble.left::before{
+      content:"";
+      position:absolute;
+      left:-6px; top: 14px;
+      width: 12px; height: 12px;
+      background:#fff;
+      border-left: 1px solid rgba(229,231,235,.9);
+      border-bottom: 1px solid rgba(229,231,235,.9);
+      transform: rotate(45deg);
+    }
+    .bubble.right{
+      justify-self:end;
+      background: #dcfce7;
+      border-color: #b7f7c9;
+      border-top-right-radius: 10px;
+    }
+    .bubble.right::before{
+      content:"";
+      position:absolute;
+      right:-6px; top: 14px;
+      width: 12px; height: 12px;
+      background:#dcfce7;
+      border-right: 1px solid #b7f7c9;
+      border-top: 1px solid #b7f7c9;
+      transform: rotate(45deg);
+    }
+    .bubble b{font-weight:900}
+    .muted{color:var(--muted); font-size:12px}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+
+    /* ===== クーポンカード（LINEのリッチメッセージっぽく） ===== */
     .card{
-      margin: 14px 12px 0;
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
+      border-radius: 18px;
       overflow:hidden;
+      box-shadow: var(--shadow);
     }
-    .card-h{
+    .card-head{
       padding: 14px 14px 10px;
-      border-bottom: 1px solid var(--border);
       display:flex;
       align-items:flex-start;
       justify-content:space-between;
       gap:10px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(6,199,85,.10), transparent);
     }
-    .card-h h2{
+    .card-head h2{
       margin:0;
       font-size: 16px;
-      font-weight: 800;
-      line-height: 1.3;
+      font-weight: 900;
+      line-height: 1.25;
     }
     .pill{
       display:inline-flex;
@@ -113,16 +206,104 @@
       color: var(--muted);
       white-space:nowrap;
     }
-    .card-b{ padding: 14px; }
+    .card-body{ padding: 14px; }
 
-    /* 進捗ゲージ */
-    .meter{
+    .coupon{
+      border: 1px dashed #a7f3d0;
+      background: #ecfdf5;
+      border-radius: 16px;
+      padding: 14px;
+    }
+    .coupon-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:baseline;
+      gap:12px;
+    }
+    .off{
+      font-size: 36px;
+      font-weight: 1000;
+      letter-spacing: .2px;
+      color: #052e16;
+    }
+    .off span{
+      font-size: 14px;
+      font-weight: 900;
+      margin-left: 4px;
+    }
+    .deadline{
+      text-align:right;
+      font-size: 12px;
+      color: #065f46;
+      font-weight: 900;
+    }
+    .sub{
       margin-top: 8px;
-      background: #eef2ff;
-      border: 1px solid #e0e7ff;
-      border-radius: 999px;
-      height: 12px;
+      font-size: 12px;
+      color: #14532d;
+      line-height: 1.6;
+    }
+    .rules{
+      margin: 10px 0 0;
+      padding-left: 18px;
+      font-size: 12px;
+      color: #14532d;
+      line-height: 1.65;
+    }
+
+    .steps{
+      margin-top: 12px;
+      display:grid;
+      gap: 10px;
+    }
+    .step{
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      background:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+    }
+    .step .left{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      min-width:0;
+    }
+    .tag{
+      width:34px;height:34px;border-radius: 10px;
+      display:grid;place-items:center;
+      font-weight: 1000;
+      color:#fff;
+      background:#9ca3af;
+      flex: 0 0 auto;
+    }
+    .step.active{
+      border-color:#86efac;
+      box-shadow: 0 12px 26px rgba(6,199,85,.18);
+    }
+    .step.active .tag{ background: var(--line-green); }
+    .when{font-weight: 900; font-size: 13px; line-height: 1.25; white-space:nowrap}
+    .desc{
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.35;
+      white-space:nowrap;
       overflow:hidden;
+      text-overflow: ellipsis;
+      max-width: 260px;
+    }
+    .rate{font-weight: 1000; font-size: 16px; white-space:nowrap}
+
+    .meter{
+      margin-top: 12px;
+      height: 12px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      overflow:hidden;
+      border: 1px solid rgba(229,231,235,.8);
     }
     .meter > div{
       height:100%;
@@ -131,142 +312,52 @@
       border-radius: 999px;
       transition: width .6s ease;
     }
-    .small{
-      margin-top: 10px;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.6;
-    }
 
-    /* クーポン枠 */
-    .coupon{
-      margin-top: 12px;
-      border: 1px dashed #c7f9d7;
-      background: #f0fff6;
-      border-radius: 16px;
-      padding: 14px;
+    /* ===== Bottom bar（LINEの入力欄っぽい固定バー） ===== */
+    .bottombar{
+      position: fixed;
+      left: 0; right: 0;
+      bottom: 0;
+      z-index: 30;
+      padding: 10px 12px calc(10px + var(--sab));
+      background: rgba(255,255,255,.92);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(229,231,235,.9);
     }
-    .coupon .big{
-      display:flex;
-      align-items:baseline;
-      justify-content:space-between;
-      gap:12px;
-    }
-    .off{
-      font-size: 34px;
-      font-weight: 900;
-      letter-spacing: .3px;
-      color: #0f172a;
-    }
-    .off span{
-      font-size: 14px;
-      font-weight: 800;
-      margin-left: 2px;
-      color: #0f172a;
-    }
-    .deadline{
-      text-align:right;
-      font-size: 12px;
-      color: #065f46;
-      font-weight: 700;
-    }
-    .rules{
-      margin: 10px 0 0;
-      padding-left: 18px;
-      color: #14532d;
-      font-size: 12px;
-      line-height: 1.65;
-    }
-
-    /* 割引テーブル */
-    .steps{
-      margin-top: 14px;
+    .bottombar .inner{
+      max-width: 520px;
+      margin: 0 auto;
       display:grid;
-      gap:10px;
-    }
-    .step{
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 12px 12px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      background:#fff;
-    }
-    .step .left{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      min-width:0;
-    }
-    .tag{
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
-      display:grid;
-      place-items:center;
-      font-weight:900;
-      color:#fff;
-      background: #9ca3af;
-      flex: 0 0 auto;
-    }
-    .step.active{
-      border-color: #86efac;
-      box-shadow: 0 10px 22px rgba(6,199,85,.18);
-    }
-    .step.active .tag{ background: var(--line-green); }
-    .when{
-      font-weight: 800;
-      font-size: 13px;
-      line-height: 1.25;
-      white-space:nowrap;
-    }
-    .desc{
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.35;
-      overflow:hidden;
-      text-overflow: ellipsis;
-      white-space:nowrap;
-      max-width: 240px;
-    }
-    .rate{
-      font-weight: 900;
-      font-size: 16px;
-      color: #111827;
-      white-space:nowrap;
-    }
-
-    /* ボタン */
-    .actions{
-      display:grid;
-      gap:10px;
-      margin-top: 14px;
+      grid-template-columns: 1fr;
+      gap: 10px;
     }
     .btn{
-      border: 0;
-      border-radius: 14px;
+      border:0;
+      border-radius: 16px;
       padding: 14px 14px;
       font-size: 15px;
-      font-weight: 900;
+      font-weight: 1000;
       cursor: pointer;
     }
     .btn.primary{
       background: var(--line-green);
-      color: #fff;
-      box-shadow: 0 12px 28px rgba(6,199,85,.25);
+      color:#fff;
+      box-shadow: 0 14px 30px rgba(6,199,85,.22);
     }
-    .btn.ghost{
+    .btn.secondary{
       background:#fff;
+      color: var(--text);
       border: 1px solid var(--border);
-      color: #111827;
     }
-    .btn:active{ transform: translateY(1px); }
+    .btn:active{transform: translateY(1px)}
+    .minirow{
+      display:flex;
+      gap:10px;
+    }
 
-    /* フッター */
-    .foot{
-      margin: 14px 12px 0;
+    /* 小さなシステム表示 */
+    .sys{
+      margin: 10px 12px 0;
       color: var(--muted);
       font-size: 11px;
       line-height: 1.6;
@@ -287,100 +378,136 @@
   <div class="app">
     <header class="topbar">
       <div class="row">
-        <span class="badge"><span class="dot"></span> 仮LIFF / GitHub Pages</span>
+        <div class="top-left">
+          <div class="avatar">H</div>
+          <div class="titlewrap">
+            <div class="appname">HAYA-TOKU（早得クーポン）</div>
+            <div class="hint" id="hintText">仮ページ：LINEっぽいUIで検証中</div>
+          </div>
+        </div>
+
+        <div class="top-actions">
+          <button class="iconbtn" id="copyBtn" title="URLコピー" aria-label="URLコピー">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="9" y="9" width="13" height="13" rx="3"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+          </button>
+          <button class="iconbtn" id="infoBtn" title="情報" aria-label="情報">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 18v-6"></path>
+              <path d="M12 8h.01"></path>
+              <circle cx="12" cy="12" r="10"></circle>
+            </svg>
+          </button>
+        </div>
       </div>
-      <h1 class="title">早得クーポン</h1>
-      <p class="subtitle">「早く使うほど割引率がお得」— 期限が近づくほど割引は小さくなります。</p>
     </header>
 
-    <section class="card" aria-label="クーポン概要">
-      <div class="card-h">
-        <h2>今日の早得</h2>
-        <span class="pill" id="statusPill">判定中…</span>
+    <main class="chat">
+      <div class="time" id="timeText">--</div>
+
+      <div class="bubble left">
+        <b>早得クーポン</b>へようこそ！<br>
+        <span class="muted">早く使うほど割引率が高い仕組みです。</span>
       </div>
 
-      <div class="card-b">
-        <div class="coupon">
-          <div class="big">
-            <div class="off" id="offText">--<span>% OFF</span></div>
-            <div class="deadline">
-              有効期限<br>
-              <span id="deadlineText">--</span>
-            </div>
-          </div>
-          <ul class="rules">
-            <li>店頭で「この画面」を提示（サンプル）</li>
-            <li>1会計1回まで（サンプル）</li>
-            <li>他クーポン併用不可（サンプル）</li>
-          </ul>
-        </div>
-
-        <div class="small">
-          いまの時間に応じて「本日の割引」を自動で切り替えるサンプルです。<br>
-          ※ 本番では「配布日」や「利用回数」なども判定できます。
-        </div>
-
-        <div class="meter" aria-label="時間経過ゲージ">
-          <div id="meterBar"></div>
-        </div>
-
-        <div class="steps" aria-label="割引ステップ">
-          <div class="step" id="s1">
-            <div class="left">
-              <div class="tag">A</div>
-              <div>
-                <div class="when">朝の早得</div>
-                <div class="desc">早起き特典（例：〜10:59）</div>
-              </div>
-            </div>
-            <div class="rate">30% OFF</div>
-          </div>
-
-          <div class="step" id="s2">
-            <div class="left">
-              <div class="tag">B</div>
-              <div>
-                <div class="when">昼の早得</div>
-                <div class="desc">お昼前後（例：11:00〜16:59）</div>
-              </div>
-            </div>
-            <div class="rate">20% OFF</div>
-          </div>
-
-          <div class="step" id="s3">
-            <div class="left">
-              <div class="tag">C</div>
-              <div>
-                <div class="when">夕方の早得</div>
-                <div class="desc">夕方以降（例：17:00〜）</div>
-              </div>
-            </div>
-            <div class="rate">10% OFF</div>
-          </div>
-        </div>
-
-        <div class="actions" aria-label="アクション">
-          <button class="btn primary" id="useBtn">このクーポンを使う（サンプル）</button>
-          <button class="btn ghost" id="shareBtn">友だちに共有（サンプル）</button>
-        </div>
+      <div class="bubble right">
+        いま使うと、どれくらいお得？
       </div>
-    </section>
 
-    <div class="foot">
-      <span class="chip">HAYA-TOKU</span>
-      <span class="chip">LIFF検証用</span>
-      <span class="chip" id="nowText">--</span><br>
-      ※ これはデザイン見本です。LIFFの処理（liff.init等）は次で足せます。
+      <section class="card" aria-label="クーポンカード">
+        <div class="card-head">
+          <h2>今日の早得</h2>
+          <span class="pill" id="statusPill">判定中…</span>
+        </div>
+
+        <div class="card-body">
+          <div class="coupon">
+            <div class="coupon-top">
+              <div class="off" id="offText">--<span>% OFF</span></div>
+              <div class="deadline">
+                有効期限<br><span id="deadlineText">--</span>
+              </div>
+            </div>
+
+            <div class="sub">
+              本日の割引は「時間が経つほど小さくなる」サンプルです。<br>
+              <span class="mono">朝30% → 昼20% → 夕10%</span>
+            </div>
+
+            <ul class="rules">
+              <li>店頭でこの画面を提示（サンプル）</li>
+              <li>1会計1回まで（サンプル）</li>
+              <li>他クーポン併用不可（サンプル）</li>
+            </ul>
+          </div>
+
+          <div class="meter" aria-label="時間経過ゲージ">
+            <div id="meterBar"></div>
+          </div>
+
+          <div class="steps" aria-label="割引ステップ">
+            <div class="step" id="s1">
+              <div class="left">
+                <div class="tag">A</div>
+                <div>
+                  <div class="when">朝の早得</div>
+                  <div class="desc">早起き特典（例：〜10:59）</div>
+                </div>
+              </div>
+              <div class="rate">30% OFF</div>
+            </div>
+
+            <div class="step" id="s2">
+              <div class="left">
+                <div class="tag">B</div>
+                <div>
+                  <div class="when">昼の早得</div>
+                  <div class="desc">お昼前後（例：11:00〜16:59）</div>
+                </div>
+              </div>
+              <div class="rate">20% OFF</div>
+            </div>
+
+            <div class="step" id="s3">
+              <div class="left">
+                <div class="tag">C</div>
+                <div>
+                  <div class="when">夕方の早得</div>
+                  <div class="desc">夕方以降（例：17:00〜）</div>
+                </div>
+              </div>
+              <div class="rate">10% OFF</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="bubble left">
+        もしこの次に進めるなら、<b>LIFFの初期化</b>を入れて<br>
+        <span class="muted">「LINEアプリ内で開いているか」「ユーザー名」</span>などを表示できます。
+      </div>
+
+      <div class="sys">
+        <span class="chip">HAYA-TOKU</span>
+        <span class="chip">GitHub Pages</span>
+        <span class="chip" id="nowText">--</span>
+      </div>
+    </main>
+  </div>
+
+  <div class="bottombar" role="contentinfo">
+    <div class="inner">
+      <button class="btn primary" id="useBtn">このクーポンを使う（サンプル）</button>
+      <div class="minirow">
+        <button class="btn secondary" id="shareBtn" style="width:100%">友だちに共有</button>
+      </div>
     </div>
   </div>
 
   <script>
-    // --- 早得ロジック（サンプル） ---
-    // 例：朝30% / 昼20% / 夕10%
-    // 必要なら「日付ベース」「経過時間ベース」「在庫・残枚数ベース」などに拡張できます。
-
     function pad2(n){ return String(n).padStart(2,'0'); }
-
     function formatJP(d){
       return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
     }
@@ -400,29 +527,54 @@
       const deadline = new Date(now);
       deadline.setHours(23,59,0,0);
 
-      // 表示
+      document.getElementById("timeText").textContent = `本日 ${pad2(now.getMonth()+1)}/${pad2(now.getDate())} ${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
       document.getElementById("offText").innerHTML = `${info.rate}<span>% OFF</span>`;
       document.getElementById("deadlineText").textContent = `${pad2(deadline.getHours())}:${pad2(deadline.getMinutes())} まで`;
       document.getElementById("nowText").textContent = `現在 ${formatJP(now)}`;
+      document.getElementById("statusPill").textContent = `本日は「${info.label}」`;
 
-      // ステップ強調
       for (const id of ["s1","s2","s3"]) document.getElementById(id).classList.remove("active");
       document.getElementById(`s${info.step}`).classList.add("active");
-
-      // 状態ピル
-      document.getElementById("statusPill").textContent = `本日は「${info.label}」`;
 
       // メーター：0:00〜24:00 の経過率
       const minutes = now.getHours()*60 + now.getMinutes();
       const pct = Math.max(0, Math.min(100, (minutes / (24*60)) * 100));
       document.getElementById("meterBar").style.width = `${pct.toFixed(1)}%`;
+
+      // ヒント（LINE内想定のメッセージ）
+      document.getElementById("hintText").textContent =
+        "仮ページ：早得ロジック＋LINE風UI（次はLIFF連携へ）";
     }
 
-    // サンプルボタン挙動
-    document.getElementById("useBtn").addEventListener("click", () => {
-      alert("（サンプル）クーポン利用処理をここに実装します。\n本番ではLIFFのユーザー情報や利用回数チェック等を入れます。");
+    // URLコピー
+    document.getElementById("copyBtn").addEventListener("click", async () => {
+      try{
+        await navigator.clipboard.writeText(location.href);
+        alert("URLをコピーしました。");
+      }catch(e){
+        alert("コピーできなかったので、URLを長押しでコピーしてください。");
+      }
     });
 
+    // 情報
+    document.getElementById("infoBtn").addEventListener("click", () => {
+      alert(
+        "HAYA-TOKU（早得クーポン）仮ページ\n\n" +
+        "・朝30% / 昼20% / 夕10% のサンプル\n" +
+        "・GitHub Pagesで公開中\n" +
+        "・次はLIFF初期化（liff.init）を追加できます"
+      );
+    });
+
+    // 利用（サンプル）
+    document.getElementById("useBtn").addEventListener("click", () => {
+      alert(
+        "（サンプル）クーポン利用処理をここに実装します。\n" +
+        "本番では利用回数チェック・店舗チェック等を入れます。"
+      );
+    });
+
+    // 共有
     document.getElementById("shareBtn").addEventListener("click", async () => {
       const url = location.href;
       const text = "早得クーポン（サンプル）\n早く使うほどお得！";
@@ -433,13 +585,10 @@
           await navigator.clipboard.writeText(`${text}\n${url}`);
           alert("共有機能がないので、URLをコピーしました。");
         }
-      }catch(e){
-        // ユーザーがキャンセル等
-      }
+      }catch(e){}
     });
 
     updateUI();
-    // 1分ごと更新（見た目のライブ感）
     setInterval(updateUI, 60 * 1000);
   </script>
 </body>
