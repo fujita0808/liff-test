@@ -3,17 +3,17 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>HAYA-TOKU（🍊ver）</title>
+  <title>早得クーポン | HAYA-TOKU（🍊ver）</title>
+
+  <!-- LIFF SDK（LINE内なら有効。ブラウザでも読み込みはできるが、機能は判定で分岐） -->
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+
   <style>
     :root{
-      --o1:#FF7A00; --o2:#FFB300; --o3:#FF5A00;
-      --bg:#fff7ec;
-      --card:#fff;
-      --text:#111827;
-      --muted:#6b7280;
-      --line:rgba(255,122,0,.18);
+      --brand:#FF7A00; --brand2:#FFB300; --brand3:#FF5A00;
+      --bg:#fff7ec; --card:#fff; --text:#0b1220; --muted:#6b7280;
+      --border:rgba(255,122,0,.16);
       --shadow:0 14px 30px rgba(0,0,0,.10);
-      --radius:18px;
       --sat: env(safe-area-inset-top, 0px);
       --sab: env(safe-area-inset-bottom, 0px);
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
@@ -24,47 +24,46 @@
       margin:0;
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", "Meiryo", sans-serif;
       background:
-        radial-gradient(900px 540px at 15% -10%, rgba(255,179,0,.45), transparent 55%),
-        radial-gradient(800px 540px at 95% 10%, rgba(255,122,0,.35), transparent 55%),
+        radial-gradient(900px 540px at 15% -10%, rgba(255,179,0,.42), transparent 55%),
+        radial-gradient(800px 540px at 95% 10%, rgba(255,122,0,.32), transparent 55%),
         var(--bg);
       color: var(--text);
     }
-    .app{
-      max-width:520px;
-      margin:0 auto;
-      min-height:100dvh;
-      padding-bottom: calc(118px + var(--sab));
-    }
+
+    .app{max-width:520px;margin:0 auto;min-height:100dvh;padding-bottom:calc(108px + var(--sab));}
     .topbar{
       position:sticky;top:0;z-index:20;
-      background: linear-gradient(180deg,var(--o1),var(--o2));
+      background: linear-gradient(180deg,var(--brand),var(--brand2));
       color:#fff;
       padding: calc(10px + var(--sat)) 14px 12px;
       box-shadow: 0 10px 24px rgba(255,90,0,.22);
     }
     .row{display:flex;align-items:center;justify-content:space-between;gap:10px;}
-    .left{display:flex;align-items:center;gap:10px;min-width:0}
+    .top-left{display:flex;align-items:center;gap:10px;min-width:0;}
     .avatar{
       width:34px;height:34px;border-radius:12px;
       background: rgba(255,255,255,.18);
       border: 1px solid rgba(255,255,255,.25);
-      display:grid;place-items:center;font-weight:1000;
-      overflow:hidden;
+      display:grid;place-items:center;font-weight:1000;overflow:hidden;
     }
+    .avatar img{width:100%;height:100%;object-fit:cover;display:block}
     .titlewrap{min-width:0}
     .appname{font-size:14px;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     .hint{margin-top:2px;font-size:11px;opacity:.92;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .top-actions{display:flex;gap:8px;}
     .iconbtn{
       width:34px;height:34px;border-radius:12px;
-      border: 1px solid rgba(255,255,255,.22);
+      border: 1px solid rgba(255,255,255,.25);
       background: rgba(255,255,255,.14);
-      color:#fff;display:grid;place-items:center;font-weight:900;
+      color:#fff;display:grid;place-items:center;cursor:pointer;font-weight:900;
     }
+    .iconbtn:active{transform:translateY(1px)}
+    .icon{width:18px;height:18px;display:block;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
 
-    .chat{padding: 12px 12px 0; display:grid; gap: 10px;}
+    .chat{padding:12px 12px 0;display:grid;gap:10px;}
     .time{
-      justify-self:center;font-size:11px;color:var(--muted);
-      background: rgba(255,255,255,.65);
+      justify-self:center;font-size:11px;color:#7c5a3c;
+      background: rgba(255,255,255,.70);
       border: 1px solid rgba(255,122,0,.14);
       padding: 6px 10px;border-radius:999px;
     }
@@ -75,28 +74,24 @@
       box-shadow: 0 8px 18px rgba(0,0,0,.06);
       border: 1px solid rgba(255,122,0,.14);
       line-height:1.55;font-size:14px;background:#fff;
+      position:relative;
     }
     .bubble.left{justify-self:start;border-top-left-radius:10px;}
-    .bubble.right{
-      justify-self:end;
-      background: rgba(255,122,0,.10);
-      border-color: rgba(255,90,0,.18);
-      border-top-right-radius:10px;
-    }
+    .bubble.right{justify-self:end;background:rgba(255,122,0,.10);border-color:rgba(255,90,0,.18);border-top-right-radius:10px;}
     .muted{color:var(--muted);font-size:12px}
     .mono{font-family:var(--mono)}
 
     .card{
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 18px;
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:18px;
       overflow:hidden;
-      box-shadow: var(--shadow);
+      box-shadow:var(--shadow);
     }
     .card-head{
-      padding: 14px 14px 10px;
+      padding:14px 14px 10px;
       display:flex;align-items:flex-start;justify-content:space-between;gap:10px;
-      border-bottom: 1px solid rgba(255,122,0,.12);
+      border-bottom:1px solid var(--border);
       background: linear-gradient(180deg, rgba(255,122,0,.12), transparent);
     }
     .card-head h2{margin:0;font-size:16px;font-weight:1000;line-height:1.25;}
@@ -109,131 +104,122 @@
     }
     .card-body{padding:14px;}
 
-    /* Ticket-ish coupon */
     .coupon{
       position:relative;
       border: 1px dashed rgba(255,90,0,.35);
       background:
         radial-gradient(160px 80px at 12% 0%, rgba(255,179,0,.22), transparent 60%),
         radial-gradient(220px 120px at 100% 10%, rgba(255,122,0,.18), transparent 65%),
-        rgba(255,255,255,.85);
+        rgba(255,255,255,.88);
       border-radius:16px;
       padding:14px;
     }
-    .coupon::before, .coupon::after{
-      content:"";
-      position:absolute;top:50%;transform:translateY(-50%);
-      width:22px;height:22px;border-radius:999px;
-      background: var(--bg);
-      border: 1px solid rgba(255,90,0,.22);
+    .coupon::before,.coupon::after{
+      content:"";position:absolute;top:50%;transform:translateY(-50%);
+      width:22px;height:22px;border-radius:999px;background:var(--bg);
+      border:1px solid rgba(255,90,0,.22);
     }
     .coupon::before{left:-11px}
     .coupon::after{right:-11px}
     .coupon-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;}
-    .off{
-      font-size:38px;font-weight:1100;letter-spacing:.2px;color:#6b3f1a;
-    }
+    .off{font-size:36px;font-weight:1100;color:#6b3f1a;}
     .off span{font-size:14px;font-weight:1000;margin-left:4px;}
     .deadline{text-align:right;font-size:12px;color:#7c5a3c;font-weight:1000;}
     .sub{margin-top:8px;font-size:12px;color:#6b3f1a;line-height:1.6;}
     .rules{margin:10px 0 0;padding-left:18px;font-size:12px;color:#6b3f1a;line-height:1.65;}
 
+    .meter{margin-top:12px;height:12px;border-radius:999px;background:rgba(0,0,0,.08);overflow:hidden;border:1px solid rgba(255,122,0,.12);}
+    .meter>div{height:100%;width:0%;background:linear-gradient(90deg,var(--brand2),var(--brand),var(--brand3));border-radius:999px;transition:width .6s ease;}
+
     .steps{margin-top:12px;display:grid;gap:10px;}
     .step{
-      border: 1px solid rgba(255,122,0,.14);
-      border-radius: 14px;
-      padding: 12px;
-      background:#fff;
+      border:1px solid rgba(255,122,0,.14);
+      border-radius:14px;padding:12px;background:#fff;
       display:flex;align-items:center;justify-content:space-between;gap:12px;
     }
-    .step .l{display:flex;align-items:center;gap:10px;min-width:0;}
-    .tag{
-      width:34px;height:34px;border-radius:10px;display:grid;place-items:center;
-      font-weight:1100;color:#fff;background:#9ca3af;flex:0 0 auto;
-    }
-    .step.active{border-color:rgba(255,90,0,.28); box-shadow: 0 12px 26px rgba(255,90,0,.14);}
-    .step.active .tag{background: linear-gradient(180deg,var(--o1),var(--o3));}
+    .step .left{display:flex;align-items:center;gap:10px;min-width:0;}
+    .tag{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-weight:1100;color:#fff;background:#9ca3af;flex:0 0 auto;}
+    .step.active{border-color:rgba(255,90,0,.28);box-shadow:0 12px 26px rgba(255,90,0,.14);}
+    .step.active .tag{background:linear-gradient(180deg,var(--brand),var(--brand3));}
     .when{font-weight:1000;font-size:13px;white-space:nowrap}
     .desc{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px;}
     .rate{font-weight:1100;font-size:16px;white-space:nowrap}
 
-    .meter{
-      margin-top:12px;height:12px;border-radius:999px;
-      background: rgba(0,0,0,.08);
-      overflow:hidden;border:1px solid rgba(255,122,0,.12);
-    }
-    .meter>div{
-      height:100%;width:42%;
-      background: linear-gradient(90deg, var(--o2), var(--o1), var(--o3));
-      border-radius:999px;
-    }
-
     .bottombar{
       position:fixed;left:0;right:0;bottom:0;z-index:30;
-      padding: 10px 12px calc(10px + var(--sab));
+      padding:10px 12px calc(10px + var(--sab));
       background: rgba(255,255,255,.92);
       backdrop-filter: blur(10px);
-      border-top: 1px solid rgba(255,122,0,.14);
+      border-top:1px solid rgba(255,122,0,.14);
     }
-    .bottombar .inner{
-      max-width:520px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:10px;
-    }
-    .btn{
-      border:0;border-radius:16px;padding:14px 14px;
-      font-size:15px;font-weight:1100;cursor:default;
-    }
-    .btn.primary{
-      background: linear-gradient(180deg,var(--o1),var(--o2));
-      color:#fff;
-      box-shadow: 0 14px 30px rgba(255,90,0,.22);
-    }
-    .btn.secondary{
-      background:#fff;color: var(--text);
-      border:1px solid rgba(255,122,0,.16);
-    }
-    .btn.dark{background:#111827;color:#fff;}
+    .bottombar .inner{max-width:520px;margin:0 auto;display:grid;gap:10px;}
+    .btn{border:0;border-radius:16px;padding:14px 14px;font-size:15px;font-weight:1100;cursor:pointer;}
+    .btn.primary{background:linear-gradient(180deg,var(--brand),var(--brand2));color:#fff;box-shadow:0 14px 30px rgba(255,90,0,.22);}
+    .btn.secondary{background:#fff;color:var(--text);border:1px solid rgba(255,122,0,.16);}
+    .btn.danger{background:#111827;color:#fff;}
+    .btn:active{transform:translateY(1px)}
     .minirow{display:flex;gap:10px;}
+
+    .sys{margin:10px 12px 0;color:var(--muted);font-size:11px;line-height:1.6;text-align:center;}
+    .chip{display:inline-block;padding:4px 8px;border-radius:999px;border:1px solid rgba(255,122,0,.14);background:#fff;margin:0 3px;}
   </style>
 </head>
+
 <body>
   <div class="app">
     <header class="topbar">
       <div class="row">
-        <div class="left">
-          <div class="avatar">H</div>
+        <div class="top-left">
+          <div class="avatar" id="avatarBox">H</div>
           <div class="titlewrap">
             <div class="appname">HAYA-TOKU（早得クーポン）</div>
-            <div class="hint">LINE内で開いています（OK）</div>
+            <div class="hint" id="hintText">起動中…</div>
           </div>
         </div>
-        <div style="display:flex;gap:8px;">
-          <div class="iconbtn">⧉</div>
-          <div class="iconbtn">i</div>
+
+        <div class="top-actions">
+          <button class="iconbtn" id="copyBtn" title="URLコピー" aria-label="URLコピー">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="9" y="9" width="13" height="13" rx="3"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+          </button>
+          <button class="iconbtn" id="infoBtn" title="情報" aria-label="情報">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 18v-6"></path>
+              <path d="M12 8h.01"></path>
+              <circle cx="12" cy="12" r="10"></circle>
+            </svg>
+          </button>
         </div>
       </div>
     </header>
 
     <main class="chat">
-      <div class="time">本日 03/05 11:39</div>
+      <div class="time" id="timeText">--</div>
 
       <div class="bubble left">
-        <b>早得クーポン</b>へようこそ！<br/>
+        <b>早得クーポン</b>へようこそ！<br>
         <span class="muted">早く使うほど割引率が高い仕組みです。</span>
       </div>
 
-      <div class="bubble right">いま使うと、どれくらいお得？</div>
+      <div class="bubble right">
+        <span id="helloText">いま使うと、どれくらいお得？</span>
+      </div>
 
       <section class="card" aria-label="クーポンカード">
         <div class="card-head">
           <h2>今日の早得</h2>
-          <span class="pill">本日は「昼の早得」</span>
+          <span class="pill" id="statusPill">判定中…</span>
         </div>
 
         <div class="card-body">
           <div class="coupon">
             <div class="coupon-top">
-              <div class="off">20<span>% OFF</span></div>
-              <div class="deadline">有効期限<br>23:59 まで</div>
+              <div class="off" id="offText">--<span>% OFF</span></div>
+              <div class="deadline">
+                有効期限<br><span id="deadlineText">--</span>
+              </div>
             </div>
 
             <div class="sub">
@@ -242,17 +228,19 @@
             </div>
 
             <ul class="rules">
-              <li>店頭でこの画面を提示</li>
-              <li>1会計1回まで</li>
-              <li>他クーポン併用不可</li>
+              <li>店頭でこの画面を提示（サンプル）</li>
+              <li>1会計1回まで（サンプル）</li>
+              <li>他クーポン併用不可（サンプル）</li>
             </ul>
           </div>
 
-          <div class="meter"><div></div></div>
+          <div class="meter" aria-label="時間経過ゲージ">
+            <div id="meterBar"></div>
+          </div>
 
-          <div class="steps">
-            <div class="step" >
-              <div class="l">
+          <div class="steps" aria-label="割引ステップ">
+            <div class="step" id="s1">
+              <div class="left">
                 <div class="tag">A</div>
                 <div>
                   <div class="when">朝の早得</div>
@@ -262,8 +250,8 @@
               <div class="rate">30% OFF</div>
             </div>
 
-            <div class="step active">
-              <div class="l">
+            <div class="step" id="s2">
+              <div class="left">
                 <div class="tag">B</div>
                 <div>
                   <div class="when">昼の早得</div>
@@ -273,8 +261,8 @@
               <div class="rate">20% OFF</div>
             </div>
 
-            <div class="step">
-              <div class="l">
+            <div class="step" id="s3">
+              <div class="left">
                 <div class="tag">C</div>
                 <div>
                   <div class="when">夕方の早得</div>
@@ -288,20 +276,201 @@
       </section>
 
       <div class="bubble left">
-        <b>状態：</b>ログイン済：LINE内で表示中<br>
-        <span class="muted">※ 完成イメージです（動作はしません）。</span>
+        <b>状態：</b><span id="envText">--</span><br>
+        <span class="muted">※ LIFF URL（<span class="mono">liff.line.me</span>）から開くと、ユーザー名表示や共有がもっと自然になります。</span>
+      </div>
+
+      <div class="sys">
+        <span class="chip">HAYA-TOKU</span>
+        <span class="chip" id="liffChip">LIFF: 未判定</span>
+        <span class="chip" id="nowText">--</span>
       </div>
     </main>
   </div>
 
-  <div class="bottombar">
+  <div class="bottombar" role="contentinfo">
     <div class="inner">
-      <button class="btn primary">このクーポンを使う</button>
+      <button class="btn primary" id="useBtn">このクーポンを使う（サンプル）</button>
       <div class="minirow">
-        <button class="btn secondary" style="width:100%">友だちに共有</button>
-        <button class="btn dark" style="width:100%">閉じる</button>
+        <button class="btn secondary" id="shareBtn" style="width:100%">友だちに共有</button>
+        <button class="btn danger" id="closeBtn" style="width:100%">閉じる</button>
       </div>
     </div>
   </div>
+
+  <script>
+    /* =========================================================
+       COMMON UI (見た目はブラウザ/LIFFどちらでも同じ)
+       ========================================================= */
+
+    const CONFIG = {
+      liffId: "2009179515-rJ1LaY8l",  // FujiさんのLIFF ID
+      deadline: "23:59",
+      steps: [
+        { id:"s1", label:"朝の早得",  desc:"早起き特典（例：〜10:59）", rate:30, start:0,  end:10 },
+        { id:"s2", label:"昼の早得",  desc:"お昼前後（例：11:00〜16:59）", rate:20, start:11, end:16 },
+        { id:"s3", label:"夕方の早得",desc:"夕方以降（例：17:00〜）",     rate:10, start:17, end:23 },
+      ]
+    };
+
+    function pad2(n){ return String(n).padStart(2,'0'); }
+    function formatJP(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`; }
+
+    function getStepByHour(h){
+      for (let i=0;i<CONFIG.steps.length;i++){
+        const s = CONFIG.steps[i];
+        if (h >= s.start && h <= s.end) return { index:i, ...s };
+      }
+      return { index:0, ...CONFIG.steps[0] };
+    }
+
+    function updateCouponUI(){
+      const now = new Date();
+      const h = now.getHours();
+      const step = getStepByHour(h);
+
+      document.getElementById("timeText").textContent = `本日 ${pad2(now.getMonth()+1)}/${pad2(now.getDate())} ${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
+      document.getElementById("offText").innerHTML = `${step.rate}<span>% OFF</span>`;
+      document.getElementById("deadlineText").textContent = `${CONFIG.deadline} まで`;
+      document.getElementById("nowText").textContent = `現在 ${formatJP(now)}`;
+      document.getElementById("statusPill").textContent = `本日は「${step.label}」`;
+
+      // active step highlight
+      for (const s of CONFIG.steps) document.getElementById(s.id).classList.remove("active");
+      document.getElementById(step.id).classList.add("active");
+
+      // meter
+      const minutes = now.getHours()*60 + now.getMinutes();
+      const pct = Math.max(0, Math.min(100, (minutes / (24*60)) * 100));
+      document.getElementById("meterBar").style.width = `${pct.toFixed(1)}%`;
+    }
+
+    function setHint(text){ document.getElementById("hintText").textContent = text; }
+    function setEnv(text){ document.getElementById("envText").textContent = text; }
+    function setLiffChip(text){ document.getElementById("liffChip").textContent = text; }
+
+    // ===== 共通ボタン（まずはブラウザでも動くように） =====
+    document.getElementById("copyBtn").addEventListener("click", async () => {
+      try{
+        await navigator.clipboard.writeText(location.href);
+        alert("URLをコピーしました。");
+      }catch(e){
+        alert("コピーできなかったので、URLを長押しでコピーしてください。");
+      }
+    });
+
+    document.getElementById("infoBtn").addEventListener("click", () => {
+      alert(
+        "HAYA-TOKU（早得クーポン）\n\n" +
+        "・朝30% / 昼20% / 夕10% のサンプル\n" +
+        "・ブラウザでもLINE内（LIFF）でも同じ見た目\n" +
+        "・LINE内なら共有/閉じるが強化されます"
+      );
+    });
+
+    document.getElementById("useBtn").addEventListener("click", () => {
+      alert("（サンプル）クーポン利用処理をここに実装します。");
+    });
+
+    // share / close は LIFFなら強化、ブラウザならフォールバック（後述）
+    document.getElementById("shareBtn").addEventListener("click", async () => {
+      await shareSmart();
+    });
+
+    document.getElementById("closeBtn").addEventListener("click", () => {
+      closeSmart();
+    });
+
+    updateCouponUI();
+    setInterval(updateCouponUI, 60 * 1000);
+
+    /* =========================================================
+       LIFF + FALLBACK (ここを切ればLIFF専用にできる)
+       ========================================================= */
+
+    // ====== FALLBACK (Browser) START ======
+    async function shareSmart(){
+      // LIFF優先（LINE内なら shareTargetPicker）
+      try{
+        if (window.liff && liff.isInClient()){
+          await liff.shareTargetPicker([{ type:"text", text:`早得クーポン（サンプル）\n${location.href}` }]);
+          return;
+        }
+      }catch(e){ /* noop */ }
+
+      // ブラウザ共有（対応していれば）
+      try{
+        if (navigator.share){
+          await navigator.share({ title:"早得クーポン", text:"早く使うほどお得！", url: location.href });
+          return;
+        }
+      }catch(e){ /* noop */ }
+
+      // 最後はコピー
+      try{
+        await navigator.clipboard.writeText(location.href);
+        alert("共有機能がないのでURLをコピーしました。");
+      }catch(e){
+        alert("共有できませんでした。URLを手動でコピーしてください。");
+      }
+    }
+
+    function closeSmart(){
+      try{
+        if (window.liff && liff.isInClient()){
+          liff.closeWindow();
+          return;
+        }
+      }catch(e){ /* noop */ }
+      alert("LINE内（LIFF）で開いた時は閉じられます。今は通常ブラウザ表示なので閉じられません。");
+    }
+    // ====== FALLBACK (Browser) END ======
+
+
+    async function initLiffOrBrowser(){
+      // ブラウザでも「同じ見た目」を保ちつつ、状態表示だけ切替える
+      const hasLiff = !!window.liff;
+      if (!hasLiff){
+        setHint("通常ブラウザで表示中（LIFF SDKなし）");
+        setEnv("ログインなし：通常ブラウザで表示中");
+        setLiffChip("LIFF: 未ロード");
+        return;
+      }
+
+      try{
+        setHint("LIFF初期化中…");
+        await liff.init({ liffId: CONFIG.liffId });
+
+        const inClient = liff.isInClient();
+        const loggedIn = liff.isLoggedIn();
+
+        setLiffChip(inClient ? "LIFF: LINE内" : "LIFF: 外部ブラウザ");
+
+        if (!loggedIn){
+          setHint(inClient ? "LINE内で開いています（ログイン未）" : "外部ブラウザで開いています（ログイン未）");
+          setEnv(inClient ? "LINE内で表示中（ログイン未）" : "外部ブラウザで表示中（ログイン未）");
+          return;
+        }
+
+        const profile = await liff.getProfile();
+        const name = profile?.displayName || "あなた";
+        document.getElementById("helloText").textContent = `${name}さん、いま使うとどれくらいお得？`;
+
+        if (profile?.pictureUrl){
+          const box = document.getElementById("avatarBox");
+          box.innerHTML = `<img alt="avatar" src="${profile.pictureUrl}">`;
+        }
+
+        setHint(inClient ? "LINE内で開いています（OK）" : "外部ブラウザで開いています（OK）");
+        setEnv(`ログイン済：${inClient ? "LINE内" : "外部ブラウザ"}で表示中`);
+      }catch(e){
+        setHint("LIFF初期化に失敗（通常表示）");
+        setEnv("LIFF初期化エラー。LIFF IDや設定を確認してください。");
+        setLiffChip("LIFF: エラー");
+      }
+    }
+
+    initLiffOrBrowser();
+  </script>
 </body>
 </html>
