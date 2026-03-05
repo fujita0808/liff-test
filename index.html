@@ -461,12 +461,13 @@
     async function initLiffOrBrowser(){
       // ブラウザでも「同じ見た目」を保ちつつ、状態表示だけ切替える
       const hasLiff = !!window.liff;
-      if (!hasLiff){
-        setHint("通常ブラウザで表示中（LIFF SDKなし）");
-        setEnv("ログインなし：通常ブラウザで表示中");
-        setLiffChip("LIFF: 未ロード");
-        return;
-      }
+     if (!hasLiff){
+  setHint("通常ブラウザで表示中（LIFF SDKなし）");
+  setEnv("ログインなし：通常ブラウザで表示中");
+  setLiffChip("LIFF: 未ロード");
+  setLiffNote("NEED_LIFF");
+  return;
+}
 
       try{
         setHint("LIFF初期化中…");
@@ -478,10 +479,11 @@
         setLiffChip(inClient ? "LIFF: LINE内" : "LIFF: 外部ブラウザ");
 
         if (!loggedIn){
-          setHint(inClient ? "LINE内で開いています（ログイン未）" : "外部ブラウザで開いています（ログイン未）");
-          setEnv(inClient ? "LINE内で表示中（ログイン未）" : "外部ブラウザで表示中（ログイン未）");
-          return;
-        }
+  setHint(inClient ? "LINE内で開いています（ログイン未）" : "外部ブラウザで開いています（ログイン未）");
+  setEnv(inClient ? "LINE内で表示中（ログイン未）" : "外部ブラウザで表示中（ログイン未）");
+  setLiffNote("NEED_LOGIN");
+  return;
+}
 
         const profile = await liff.getProfile();
         const name = profile?.displayName || "あなた";
@@ -494,10 +496,13 @@
 
         setHint(inClient ? "LINE内で開いています（OK）" : "外部ブラウザで開いています（OK）");
         setEnv(`ログイン済：${inClient ? "LINE内" : "外部ブラウザ"}で表示中`);
+        setLiffNote("OK");
+        
       }catch(e){
         setHint("LIFF初期化に失敗（通常表示）");
         setEnv("LIFF初期化エラー。LIFF IDや設定を確認してください。");
         setLiffChip("LIFF: エラー");
+        setLiffNote("ERROR");
       }
     }
 
