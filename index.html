@@ -17,6 +17,10 @@
       --sat: env(safe-area-inset-top, 0px);
       --sab: env(safe-area-inset-bottom, 0px);
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+      --ok:#0a7f3f;
+      --ng:#b42318;
+      --info:#1f5fbf;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
@@ -30,7 +34,7 @@
       color: var(--text);
     }
 
-    .app{max-width:520px;margin:0 auto;min-height:100dvh;padding-bottom:calc(108px + var(--sab));}
+    .app{max-width:520px;margin:0 auto;min-height:100dvh;padding-bottom:calc(150px + var(--sab));}
     .topbar{
       position:sticky;top:0;z-index:20;
       background: linear-gradient(180deg,var(--brand),var(--brand2));
@@ -102,6 +106,11 @@
       background:rgba(255,255,255,.75);
       color:#7c5a3c;white-space:nowrap;
     }
+    .pill.used{
+      border-color: rgba(10,127,63,.25);
+      color: var(--ok);
+      background: rgba(10,127,63,.10);
+    }
     .card-body{padding:14px;}
 
     .coupon{
@@ -127,6 +136,23 @@
     .deadline{text-align:right;font-size:12px;color:#7c5a3c;font-weight:1000;}
     .sub{margin-top:8px;font-size:12px;color:#6b3f1a;line-height:1.6;}
     .rules{margin:10px 0 0;padding-left:18px;font-size:12px;color:#6b3f1a;line-height:1.65;}
+
+    /* 利用済みバッジ（カード内右上） */
+    .usedBadge{
+      position:absolute;
+      top:12px;
+      right:12px;
+      display:none;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:1100;
+      border:1px solid rgba(10,127,63,.28);
+      background: rgba(10,127,63,.10);
+      color: var(--ok);
+      box-shadow: 0 10px 22px rgba(10,127,63,.14);
+    }
+    .coupon.is-used .usedBadge{display:inline-flex;}
 
     .meter{margin-top:12px;height:12px;border-radius:999px;background:rgba(0,0,0,.08);overflow:hidden;border:1px solid rgba(255,122,0,.12);}
     .meter>div{height:100%;width:0%;background:linear-gradient(90deg,var(--brand2),var(--brand),var(--brand3));border-radius:999px;transition:width .6s ease;}
@@ -158,10 +184,122 @@
     .btn.secondary{background:#fff;color:var(--text);border:1px solid rgba(255,122,0,.16);}
     .btn.danger{background:#111827;color:#fff;}
     .btn:active{transform:translateY(1px)}
+    .btn:disabled{
+      cursor:not-allowed;
+      opacity:.65;
+      filter:grayscale(.1);
+      transform:none;
+    }
     .minirow{display:flex;gap:10px;}
 
     .sys{margin:10px 12px 0;color:var(--muted);font-size:11px;line-height:1.6;text-align:center;}
     .chip{display:inline-block;padding:4px 8px;border-radius:999px;border:1px solid rgba(255,122,0,.14);background:#fff;margin:0 3px;}
+
+    /* =========================
+       Toast（画面内通知）
+       ========================= */
+    .toastHost{
+      position:fixed;
+      left:0; right:0;
+      bottom: calc(86px + var(--sab));
+      z-index:999;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:8px;
+      pointer-events:none;
+      padding:0 12px;
+    }
+    .toast{
+      width:min(520px, calc(100% - 24px));
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      padding:12px 12px;
+      border-radius:14px;
+      background: rgba(17, 24, 39, .92);
+      color:#fff;
+      box-shadow:0 16px 34px rgba(0,0,0,.20);
+      border:1px solid rgba(255,255,255,.10);
+      transform: translateY(10px);
+      opacity:0;
+      transition: transform .18s ease, opacity .18s ease;
+      pointer-events:auto;
+    }
+    .toast.show{transform: translateY(0); opacity:1;}
+    .toast .tleft{display:flex; flex-direction:column; gap:3px; min-width:0;}
+    .toast .ttitle{font-size:13px; font-weight:1100; line-height:1.2;}
+    .toast .tmsg{font-size:12px; opacity:.9; line-height:1.35; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+    .toast .tclose{
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.10);
+      color:#fff;
+      border-radius:10px;
+      padding:6px 10px;
+      cursor:pointer;
+      font-weight:1000;
+    }
+    .toast .tclose:active{transform: translateY(1px);}
+    .toast.ok{background: rgba(10,127,63,.92);}
+    .toast.ng{background: rgba(180,35,24,.92);}
+    .toast.info{background: rgba(31,95,191,.92);}
+
+    /* =========================
+       Debug Panel（折りたたみ）
+       ========================= */
+    details.debug{
+      max-width:520px;
+      margin: 10px auto 0;
+      padding: 0 12px 0;
+    }
+    details.debug > summary{
+      list-style:none;
+      cursor:pointer;
+      user-select:none;
+      background: rgba(255,255,255,.78);
+      border:1px solid rgba(255,122,0,.14);
+      border-radius:14px;
+      padding:10px 12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      font-size:12px;
+      color:#7c5a3c;
+      box-shadow: 0 10px 20px rgba(0,0,0,.06);
+    }
+    details.debug > summary::-webkit-details-marker{display:none}
+    .dbgBody{
+      margin-top:8px;
+      background:#fff;
+      border:1px solid rgba(255,122,0,.14);
+      border-radius:14px;
+      padding:10px 12px;
+      font-size:12px;
+      color:#111827;
+      box-shadow: 0 10px 20px rgba(0,0,0,.05);
+    }
+    .dbgGrid{
+      display:grid;
+      grid-template-columns: 140px 1fr;
+      gap:6px 10px;
+      align-items:start;
+    }
+    .dbgKey{color:#6b7280}
+    .dbgVal{font-family:var(--mono); word-break:break-word}
+    .dbgVal .muted{font-family:inherit}
+    .dbgErr{
+      margin-top:10px;
+      padding:10px 10px;
+      border-radius:12px;
+      border:1px solid rgba(180,35,24,.18);
+      background: rgba(180,35,24,.06);
+      color:#7a1f17;
+      font-family:var(--mono);
+      white-space:pre-wrap;
+      word-break:break-word;
+    }
   </style>
 </head>
 
@@ -214,7 +352,9 @@
         </div>
 
         <div class="card-body">
-          <div class="coupon">
+          <div class="coupon" id="couponBox">
+            <span class="usedBadge" id="usedBadge">利用済み</span>
+
             <div class="coupon-top">
               <div class="off" id="offText">--<span>% OFF</span></div>
               <div class="deadline">
@@ -275,18 +415,40 @@
         </div>
       </section>
 
- <div class="bubble left">
-  <b>状態：</b><span id="envText">--</span><br>
-  <span class="muted" id="liffNote">
-    ※ LIFF URL（<span class="mono">liff.line.me</span>）から開くと、ユーザー名表示や共有がもっと自然になります。
-  </span>
- </div>
+      <div class="bubble left">
+        <b>状態：</b><span id="envText">--</span><br>
+        <span class="muted" id="liffNote">
+          ※ LIFF URL（<span class="mono">liff.line.me</span>）から開くと、ユーザー名表示や共有がもっと自然になります。
+        </span>
+      </div>
 
       <div class="sys">
         <span class="chip">HAYA-TOKU</span>
         <span class="chip" id="liffChip">LIFF: 未判定</span>
         <span class="chip" id="nowText">--</span>
       </div>
+
+      <!-- Debug Panel -->
+      <details class="debug" id="debugPanel">
+        <summary>
+          <span>開発者用デバッグ</span>
+          <span class="mono" id="dbgMini">--</span>
+        </summary>
+        <div class="dbgBody">
+          <div class="dbgGrid">
+            <div class="dbgKey">liffId</div><div class="dbgVal" id="dbgLiffId">--</div>
+            <div class="dbgKey">hasLiff</div><div class="dbgVal" id="dbgHasLiff">--</div>
+            <div class="dbgKey">isInClient</div><div class="dbgVal" id="dbgInClient">--</div>
+            <div class="dbgKey">isLoggedIn</div><div class="dbgVal" id="dbgLoggedIn">--</div>
+            <div class="dbgKey">liff.getOS()</div><div class="dbgVal" id="dbgOS">--</div>
+            <div class="dbgKey">liff.getLanguage()</div><div class="dbgVal" id="dbgLang">--</div>
+            <div class="dbgKey">UA</div><div class="dbgVal" id="dbgUA">--</div>
+            <div class="dbgKey">usedState</div><div class="dbgVal" id="dbgUsed">--</div>
+          </div>
+
+          <div class="dbgErr" id="dbgErr" style="display:none"></div>
+        </div>
+      </details>
     </main>
   </div>
 
@@ -299,6 +461,9 @@
       </div>
     </div>
   </div>
+
+  <!-- Toast Host -->
+  <div class="toastHost" id="toastHost" aria-live="polite" aria-atomic="true"></div>
 
   <script>
     /* =========================================================
@@ -315,7 +480,74 @@
       ]
     };
 
+    // === 利用済み（擬似）キー：まずは「今日1回」扱い ===
     function pad2(n){ return String(n).padStart(2,'0'); }
+    function todayKey(){
+      const d = new Date();
+      return `haya-toku.used.${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+    }
+
+    const USED = {
+      key: todayKey(),
+      get(){
+        try { return localStorage.getItem(USED.key) === "1"; } catch { return false; }
+      },
+      set(v){
+        try { localStorage.setItem(USED.key, v ? "1" : "0"); } catch {}
+      },
+      clear(){
+        try { localStorage.removeItem(USED.key); } catch {}
+      }
+    };
+
+    // =========================
+    // Toast
+    // =========================
+    function toast(type, title, msg, ms=2400){
+      const host = document.getElementById("toastHost");
+      const el = document.createElement("div");
+      el.className = `toast ${type || ""}`;
+      el.innerHTML = `
+        <div class="tleft">
+          <div class="ttitle"></div>
+          <div class="tmsg"></div>
+        </div>
+        <button class="tclose" type="button" aria-label="閉じる">×</button>
+      `;
+      el.querySelector(".ttitle").textContent = title || "通知";
+      el.querySelector(".tmsg").textContent = msg || "";
+      const btn = el.querySelector(".tclose");
+
+      const remove = () => {
+        el.classList.remove("show");
+        setTimeout(() => el.remove(), 180);
+      };
+      btn.addEventListener("click", remove);
+
+      host.appendChild(el);
+      requestAnimationFrame(() => el.classList.add("show"));
+      setTimeout(remove, ms);
+    }
+
+    // =========================
+    // Debug helpers
+    // =========================
+    const DBG = {
+      lastError: null,
+      setError(err){
+        DBG.lastError = err;
+        const box = document.getElementById("dbgErr");
+        if (!box) return;
+        if (!err){
+          box.style.display = "none";
+          box.textContent = "";
+          return;
+        }
+        box.style.display = "";
+        box.textContent = String(err?.stack || err?.message || err);
+      }
+    };
+
     function formatJP(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`; }
 
     function getStepByHour(h){
@@ -352,58 +584,91 @@
     function setLiffChip(text){ document.getElementById("liffChip").textContent = text; }
 
     function setLiffNote(mode){
-  const el = document.getElementById("liffNote");
-  if (!el) return;
+      const el = document.getElementById("liffNote");
+      if (!el) return;
 
-  // mode: "OK" | "NEED_LIFF" | "NEED_LOGIN" | "ERROR"
-  if (mode === "OK") {
-    // ✅ 今のスクショ状態ではこれが自然
-    el.textContent = "LIFFで起動中（ログイン済）：プロフィール表示・共有・閉じるが利用できます。";
-    // もし「出したくない」なら次の1行に変更
-    // el.style.display = "none";
-    return;
-  }
+      // mode: "OK" | "NEED_LIFF" | "NEED_LOGIN" | "ERROR"
+      if (mode === "OK") {
+        el.textContent = "LIFFで起動中（ログイン済）：プロフィール表示・共有・閉じるが利用できます。";
+        return;
+      }
+      if (mode === "NEED_LOGIN") {
+        el.textContent = "ログインすると、ユーザー名表示や共有がより自然になります。";
+        el.style.display = "";
+        return;
+      }
+      if (mode === "ERROR") {
+        el.textContent = "LIFF初期化に失敗しました。LIFF設定とURLを確認してください。";
+        el.style.display = "";
+        return;
+      }
+      // NEED_LIFF（通常ブラウザ）
+      el.innerHTML = '※ LIFF URL（<span class="mono">liff.line.me</span>）から開くと、ユーザー名表示や共有がもっと自然になります。';
+      el.style.display = "";
+    }
 
-  if (mode === "NEED_LOGIN") {
-    el.textContent = "ログインすると、ユーザー名表示や共有がより自然になります。";
-    el.style.display = "";
-    return;
-  }
+    // 利用済みUI適用
+    function applyUsedUI(){
+      const isUsed = USED.get();
+      const coupon = document.getElementById("couponBox");
+      const badge = document.getElementById("usedBadge");
+      const pill = document.getElementById("statusPill");
+      const btn = document.getElementById("useBtn");
 
-  if (mode === "ERROR") {
-    el.textContent = "LIFF初期化に失敗しました。LIFF設定とURLを確認してください。";
-    el.style.display = "";
-    return;
-  }
+      if (isUsed){
+        coupon?.classList.add("is-used");
+        if (badge) badge.style.display = "";
+        if (pill){
+          pill.classList.add("used");
+          pill.textContent = "利用済み（サンプル）";
+        }
+        if (btn){
+          btn.disabled = true;
+          btn.textContent = "利用済み（サンプル）";
+        }
+      } else {
+        coupon?.classList.remove("is-used");
+        if (badge) badge.style.display = "none";
+        if (pill) pill.classList.remove("used");
+        if (btn){
+          btn.disabled = false;
+          btn.textContent = "このクーポンを使う（サンプル）";
+        }
+        // statusPill は updateCouponUI() が上書きするのでここでは触らない
+      }
 
-  // NEED_LIFF（通常ブラウザ）
-  el.innerHTML = '※ LIFF URL（<span class="mono">liff.line.me</span>）から開くと、ユーザー名表示や共有がもっと自然になります。';
-  el.style.display = "";
-}
-    // ===== 共通ボタン（まずはブラウザでも動くように） =====
+      // debug
+      const dbgUsed = document.getElementById("dbgUsed");
+      if (dbgUsed) dbgUsed.textContent = String(isUsed);
+
+      // mini
+      const dbgMini = document.getElementById("dbgMini");
+      if (dbgMini) dbgMini.textContent = isUsed ? "used=1" : "used=0";
+    }
+
+    // ===== 共通ボタン（ブラウザでも動く） =====
     document.getElementById("copyBtn").addEventListener("click", async () => {
       try{
         await navigator.clipboard.writeText(location.href);
-        alert("URLをコピーしました。");
+        toast("ok", "コピー完了", "URLをコピーしました");
       }catch(e){
-        alert("コピーできなかったので、URLを長押しでコピーしてください。");
+        toast("ng", "コピー失敗", "コピーできませんでした（URLを手動でコピーしてください）", 3200);
+        DBG.setError(e);
       }
     });
 
     document.getElementById("infoBtn").addEventListener("click", () => {
-      alert(
-        "HAYA-TOKU（早得クーポン）\n\n" +
-        "・朝30% / 昼20% / 夕10% のサンプル\n" +
-        "・ブラウザでもLINE内（LIFF）でも同じ見た目\n" +
-        "・LINE内なら共有/閉じるが強化されます"
-      );
+      toast("info", "HAYA-TOKU", "朝30% / 昼20% / 夕10%（サンプル）・LINE内なら共有/閉じるが強化されます", 3600);
     });
 
     document.getElementById("useBtn").addEventListener("click", () => {
-      alert("（サンプル）クーポン利用処理をここに実装します。");
+      // まずは擬似で「利用済み」にする
+      USED.set(true);
+      applyUsedUI();
+      toast("ok", "利用しました", "利用済みにしました（サンプル）");
     });
 
-    // share / close は LIFFなら強化、ブラウザならフォールバック（後述）
+    // share / close は LIFFなら強化、ブラウザならフォールバック
     document.getElementById("shareBtn").addEventListener("click", async () => {
       await shareSmart();
     });
@@ -413,7 +678,13 @@
     });
 
     updateCouponUI();
-    setInterval(updateCouponUI, 60 * 1000);
+    applyUsedUI();
+    setInterval(() => {
+      updateCouponUI();
+      // 日付が変わったらキーも変わるので、表示も追随させたい場合は再ロード推奨だが、
+      // ここでは簡易に：0時台でリロードでもOK。今はUIだけ維持。
+      applyUsedUI();
+    }, 60 * 1000);
 
     /* =========================================================
        LIFF + FALLBACK (ここを切ればLIFF専用にできる)
@@ -425,24 +696,41 @@
       try{
         if (window.liff && liff.isInClient()){
           await liff.shareTargetPicker([{ type:"text", text:`早得クーポン（サンプル）\n${location.href}` }]);
+          toast("ok", "共有しました", "友だちに共有しました");
           return;
         }
-      }catch(e){ /* noop */ }
+      }catch(e){
+        // shareTargetPicker は「キャンセル」も例外で返るケースがあるのでメッセージを分ける
+        const msg = String(e?.message || e);
+        if (/cancel/i.test(msg) || /canceled/i.test(msg) || /CANCEL/i.test(msg)){
+          toast("info", "キャンセル", "共有はキャンセルされました");
+        }else{
+          toast("ng", "共有失敗", "LIFF共有に失敗しました（フォールバックします）", 3200);
+          DBG.setError(e);
+        }
+        // そのままフォールバックへ
+      }
 
       // ブラウザ共有（対応していれば）
       try{
         if (navigator.share){
           await navigator.share({ title:"早得クーポン", text:"早く使うほどお得！", url: location.href });
+          toast("ok", "共有しました", "共有ダイアログを開きました");
           return;
         }
-      }catch(e){ /* noop */ }
+      }catch(e){
+        // ユーザーキャンセルの場合も多いので info 扱い
+        toast("info", "キャンセル/未共有", "共有は完了しませんでした（必要ならURLをコピーしてください）", 3200);
+        DBG.setError(e);
+      }
 
       // 最後はコピー
       try{
         await navigator.clipboard.writeText(location.href);
-        alert("共有機能がないのでURLをコピーしました。");
+        toast("ok", "コピー完了", "共有機能がないためURLをコピーしました");
       }catch(e){
-        alert("共有できませんでした。URLを手動でコピーしてください。");
+        toast("ng", "共有できません", "URLを手動でコピーしてください", 3200);
+        DBG.setError(e);
       }
     }
 
@@ -452,22 +740,38 @@
           liff.closeWindow();
           return;
         }
-      }catch(e){ /* noop */ }
-      alert("LINE内（LIFF）で開いた時は閉じられます。今は通常ブラウザ表示なので閉じられません。");
+      }catch(e){
+        DBG.setError(e);
+      }
+      toast("info", "閉じられません", "LINE内（LIFF）で開いた時だけ閉じられます", 3200);
     }
     // ====== FALLBACK (Browser) END ======
 
+    function dbgSet(id, val){
+      const el = document.getElementById(id);
+      if (el) el.textContent = (val === undefined || val === null) ? "--" : String(val);
+    }
 
     async function initLiffOrBrowser(){
-      // ブラウザでも「同じ見た目」を保ちつつ、状態表示だけ切替える
       const hasLiff = !!window.liff;
-     if (!hasLiff){
-  setHint("通常ブラウザで表示中（LIFF SDKなし）");
-  setEnv("ログインなし：通常ブラウザで表示中");
-  setLiffChip("LIFF: 未ロード");
-  setLiffNote("NEED_LIFF");
-  return;
-}
+
+      // debug base
+      dbgSet("dbgLiffId", CONFIG.liffId);
+      dbgSet("dbgHasLiff", hasLiff);
+      dbgSet("dbgUA", navigator.userAgent);
+
+      if (!hasLiff){
+        setHint("通常ブラウザで表示中（LIFF SDKなし）");
+        setEnv("ログインなし：通常ブラウザで表示中");
+        setLiffChip("LIFF: 未ロード");
+        setLiffNote("NEED_LIFF");
+
+        dbgSet("dbgInClient", false);
+        dbgSet("dbgLoggedIn", false);
+        dbgSet("dbgOS", "--");
+        dbgSet("dbgLang", "--");
+        return;
+      }
 
       try{
         setHint("LIFF初期化中…");
@@ -478,12 +782,19 @@
 
         setLiffChip(inClient ? "LIFF: LINE内" : "LIFF: 外部ブラウザ");
 
+        dbgSet("dbgInClient", inClient);
+        dbgSet("dbgLoggedIn", loggedIn);
+
+        // OS / language は取れない環境もあるので try
+        try { dbgSet("dbgOS", liff.getOS()); } catch { dbgSet("dbgOS", "--"); }
+        try { dbgSet("dbgLang", liff.getLanguage()); } catch { dbgSet("dbgLang", "--"); }
+
         if (!loggedIn){
-  setHint(inClient ? "LINE内で開いています（ログイン未）" : "外部ブラウザで開いています（ログイン未）");
-  setEnv(inClient ? "LINE内で表示中（ログイン未）" : "外部ブラウザで表示中（ログイン未）");
-  setLiffNote("NEED_LOGIN");
-  return;
-}
+          setHint(inClient ? "LINE内で開いています（ログイン未）" : "外部ブラウザで開いています（ログイン未）");
+          setEnv(inClient ? "LINE内で表示中（ログイン未）" : "外部ブラウザで表示中（ログイン未）");
+          setLiffNote("NEED_LOGIN");
+          return;
+        }
 
         const profile = await liff.getProfile();
         const name = profile?.displayName || "あなた";
@@ -497,8 +808,9 @@
         setHint(inClient ? "LINE内で開いています（OK）" : "外部ブラウザで開いています（OK）");
         setEnv(`ログイン済：${inClient ? "LINE内" : "外部ブラウザ"}で表示中`);
         setLiffNote("OK");
-        
+
       }catch(e){
+        DBG.setError(e);
         setHint("LIFF初期化に失敗（通常表示）");
         setEnv("LIFF初期化エラー。LIFF IDや設定を確認してください。");
         setLiffChip("LIFF: エラー");
