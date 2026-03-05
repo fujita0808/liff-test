@@ -5,11 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>早得クーポン | HAYA-TOKU（🍊ver）</title>
 
-  <!--
-    LIFF SDK
-    - LINE内（LIFF）で開くと liff.* が使えます
-    - 通常ブラウザでも読み込みはできますが、isInClient() などで分岐します
-  -->
+  <!-- LIFF SDK（ブラウザでも読み込みOK。使える時だけ利用） -->
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 
   <style>
@@ -141,7 +137,6 @@
     .sub{margin-top:8px;font-size:12px;color:#6b3f1a;line-height:1.6;}
     .rules{margin:10px 0 0;padding-left:18px;font-size:12px;color:#6b3f1a;line-height:1.65;}
 
-    /* 利用済みバッジ（カード内右上） */
     .usedBadge{
       position:absolute;
       top:12px;
@@ -188,20 +183,13 @@
     .btn.secondary{background:#fff;color:var(--text);border:1px solid rgba(255,122,0,.16);}
     .btn.danger{background:#111827;color:#fff;}
     .btn:active{transform:translateY(1px)}
-    .btn:disabled{
-      cursor:not-allowed;
-      opacity:.65;
-      filter:grayscale(.1);
-      transform:none;
-    }
+    .btn:disabled{cursor:not-allowed;opacity:.65;filter:grayscale(.1);transform:none;}
     .minirow{display:flex;gap:10px;}
 
     .sys{margin:10px 12px 0;color:var(--muted);font-size:11px;line-height:1.6;text-align:center;}
     .chip{display:inline-block;padding:4px 8px;border-radius:999px;border:1px solid rgba(255,122,0,.14);background:#fff;margin:0 3px;}
 
-    /* =========================
-       Toast（画面内通知）
-       ========================= */
+    /* Toast */
     .toastHost{
       position:fixed;
       left:0; right:0;
@@ -249,85 +237,41 @@
     .toast.ng{background: rgba(180,35,24,.92);}
     .toast.info{background: rgba(31,95,191,.92);}
 
-    /* =========================
-       Debug Panel（折りたたみ）
-       ========================= */
-    details.debug{
-      max-width:520px;
-      margin: 10px auto 0;
-      padding: 0 12px 0;
-    }
+    /* Debug */
+    details.debug{max-width:520px;margin: 10px auto 0;padding: 0 12px 0;}
     details.debug > summary{
-      list-style:none;
-      cursor:pointer;
-      user-select:none;
+      list-style:none;cursor:pointer;user-select:none;
       background: rgba(255,255,255,.78);
       border:1px solid rgba(255,122,0,.14);
       border-radius:14px;
       padding:10px 12px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      font-size:12px;
-      color:#7c5a3c;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      font-size:12px;color:#7c5a3c;
       box-shadow: 0 10px 20px rgba(0,0,0,.06);
     }
     details.debug > summary::-webkit-details-marker{display:none}
     .dbgBody{
-      margin-top:8px;
-      background:#fff;
-      border:1px solid rgba(255,122,0,.14);
-      border-radius:14px;
-      padding:10px 12px;
-      font-size:12px;
-      color:#111827;
+      margin-top:8px;background:#fff;border:1px solid rgba(255,122,0,.14);
+      border-radius:14px;padding:10px 12px;font-size:12px;color:#111827;
       box-shadow: 0 10px 20px rgba(0,0,0,.05);
     }
-    .dbgGrid{
-      display:grid;
-      grid-template-columns: 140px 1fr;
-      gap:6px 10px;
-      align-items:start;
-    }
+    .dbgGrid{display:grid;grid-template-columns: 140px 1fr;gap:6px 10px;align-items:start;}
     .dbgKey{color:#6b7280}
     .dbgVal{font-family:var(--mono); word-break:break-word}
     .dbgErr{
-      margin-top:10px;
-      padding:10px 10px;
-      border-radius:12px;
+      margin-top:10px;padding:10px 10px;border-radius:12px;
       border:1px solid rgba(180,35,24,.18);
       background: rgba(180,35,24,.06);
-      color:#7a1f17;
-      font-family:var(--mono);
-      white-space:pre-wrap;
-      word-break:break-word;
+      color:#7a1f17;font-family:var(--mono);
+      white-space:pre-wrap;word-break:break-word;
     }
 
-    /* =========================
-       Use Confirm Modal（店員確認）
-       - 10秒で自動確定
-       - 「利用を確定」ボタンで即確定
-       - 「キャンセル」で中止
-       ========================= */
-    .modal{
-      position: fixed;
-      inset: 0;
-      z-index: 1200;
-      display: none;
-    }
+    /* Modal */
+    .modal{position: fixed;inset: 0;z-index: 1200;display: none;}
     .modal.is-open{ display:block; }
-    .modalBackdrop{
-      position:absolute;
-      inset:0;
-      background: rgba(17, 24, 39, .55);
-      backdrop-filter: blur(4px);
-    }
+    .modalBackdrop{position:absolute;inset:0;background: rgba(17, 24, 39, .55);backdrop-filter: blur(4px);}
     .modalCard{
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
+      position: absolute;left: 50%;top: 50%;transform: translate(-50%, -50%);
       width: min(520px, calc(100% - 24px));
       background: rgba(255,255,255,.96);
       border: 1px solid rgba(255,122,0,.18);
@@ -335,41 +279,54 @@
       box-shadow: 0 22px 60px rgba(0,0,0,.22);
       padding: 14px 14px 12px;
     }
-    .modalTitle{
-      font-weight: 1100;
-      font-size: 16px;
-      color: #6b3f1a;
+    .modalTitle{font-weight: 1100;font-size: 16px;color: #6b3f1a;}
+
+    /* 店員さんに“見せる用”の情報カード */
+    .useCard{
+      margin-top:10px;
+      border-radius:14px;
+      border:1px solid rgba(17,24,39,.10);
+      background: rgba(17,24,39,.06);
+      padding:12px 12px;
+      display:grid;
+      gap:10px;
+    }
+    .useBig{
+      display:flex;
+      align-items:baseline;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .useOff{
+      font-weight:1200;
+      font-size:32px;
+      color:#111827; /* オレンジに負けない濃色 */
+      letter-spacing:.3px;
+      line-height:1.1;
+    }
+    .useOff small{font-size:12px;font-weight:1100;color:#374151;margin-left:6px;}
+    .useMeta{
+      text-align:right;
+      font-size:12px;
+      color:#374151;
+      font-weight:1000;
+      line-height:1.35;
+    }
+    .useName{
+      font-size:14px;
+      font-weight:1200;
+      color:#111827;
+      line-height:1.35;
+    }
+    .useKey{
+      font-family:var(--mono);
+      font-size:11px;
+      color:#6b7280;
     }
 
-    .modalSub{
-      margin-top:10px;
-      padding:12px 12px;
-      border-radius:14px;
-      background: rgba(17,24,39,.06);
-      border: 1px solid rgba(17,24,39,.10);
-      font-weight: 1200;
-      font-size: 20px;
-      color: #111827; /* 濃い黒寄り：オレンジの確定ボタンに負けない */
-      letter-spacing: .3px;
-      line-height: 1.25;
-      text-align: center;
-    }
-    .modalMsg{
-      margin-top: 10px;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-    .modalBtns{
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 12px;
-    }
-    .modalNote{
-      margin-top: 10px;
-      font-size: 12px;
-      line-height: 1.5;
-    }
+    .modalMsg{margin-top: 10px;font-size: 14px;line-height: 1.5;}
+    .modalBtns{display: grid;grid-template-columns: 1fr 1fr;gap: 10px;margin-top: 12px;}
+    .modalNote{margin-top: 10px;font-size: 12px;line-height: 1.5;}
   </style>
 </head>
 
@@ -498,7 +455,6 @@
         <span class="chip" id="nowText">--</span>
       </div>
 
-      <!-- Debug Panel -->
       <details class="debug" id="debugPanel">
         <summary>
           <span>開発者用デバッグ</span>
@@ -516,14 +472,11 @@
             <div class="dbgKey">usedState</div><div class="dbgVal" id="dbgUsed">--</div>
           </div>
 
-          <!-- used=1 を解除する（開発用） -->
           <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
             <button type="button" class="btn secondary" id="btnResetUsed" style="padding:10px 12px; border-radius:12px;">
               利用済みリセット（used=0）
             </button>
-            <span class="muted" style="align-self:center;">
-              ※ 今日の「利用済み」だけ解除します
-            </span>
+            <span class="muted" style="align-self:center;">※ 今日の「利用済み」だけ解除します</span>
           </div>
 
           <div class="dbgErr" id="dbgErr" style="display:none"></div>
@@ -547,31 +500,51 @@
     <div class="modalBackdrop" id="useModalBackdrop"></div>
     <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="useModalTitle">
       <div class="modalTitle" id="useModalTitle">店員さんに見せてください！</div>
-      <div class="modalSub" id="useCouponInfo">クーポン：--</div>
+
+      <div class="useCard" aria-label="店員確認用クーポン情報">
+        <div class="useBig">
+          <div class="useOff"><span id="mRate">--</span><small>% OFF</small></div>
+          <div class="useMeta">
+            <div>有効期限：<span id="mDeadline">--</span></div>
+            <div>時間帯：<span id="mBand">--</span></div>
+          </div>
+        </div>
+        <div class="useName" id="mTitle">クーポン：--</div>
+        <div class="useKey" id="mKey">--</div>
+      </div>
+
       <div class="modalMsg">
         カウントダウン：あと <b class="mono" id="useCountdown">5</b> 秒で確定
       </div>
+
       <div class="modalBtns">
         <button type="button" class="btn primary" id="btnConfirmUse">利用を確定</button>
         <button type="button" class="btn secondary" id="btnCancelUse">キャンセル</button>
       </div>
-      <div class="modalNote muted">
+
+      <div class="modalNote muted" id="mNote">
         ※ キャンセルしない場合、5秒後に自動で「利用済み（サンプル）」になります
       </div>
     </div>
   </div>
 
-  <!-- Toast Host -->
   <div class="toastHost" id="toastHost" aria-live="polite" aria-atomic="true"></div>
 
   <script>
     /* =========================================================
        CONFIG
        ========================================================= */
-
     const CONFIG = {
-      liffId: "2009179515-rJ1LaY8l", // FujiさんのLIFF ID
+      liffId: "2009179515-rJ1LaY8l",
       deadline: "23:59",
+      useConfirmSeconds: 5,
+
+      // キャンセル方針（LINE内運用を想定して整理）
+      // - "allow"           : 常に許可
+      // - "confirmInClient" : LINE内だけキャンセル時に確認（推奨）
+      // - "denyInClient"    : LINE内はキャンセル不可（ボタン無効）
+      cancelPolicy: "confirmInClient",
+
       steps: [
         { id:"s1", label:"朝の早得",  desc:"早起き特典（例：〜10:59）", rate:30, start:0,  end:10 },
         { id:"s2", label:"昼の早得",  desc:"お昼前後（例：11:00〜16:59）", rate:20, start:11, end:16 },
@@ -580,36 +553,25 @@
     };
 
     /* =========================================================
-       USED STATE (localStorage)
-       - まずは「今日1回」扱いの擬似実装
+       SMALL UTILS
        ========================================================= */
-
-    function pad2(n){ return String(n).padStart(2,'0'); }
+    const $ = (id) => document.getElementById(id);
+    const pad2 = (n) => String(n).padStart(2,'0');
 
     function todayKey(){
       const d = new Date();
-      return `haya-toku.used.${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+      return `haya-toku.used.v3.${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
     }
 
     const USED = {
       key: todayKey(),
-      get(){
-        try { return localStorage.getItem(USED.key) === "1"; } catch { return false; }
-      },
-      set(v){
-        try { localStorage.setItem(USED.key, v ? "1" : "0"); } catch {}
-      },
-      clear(){
-        try { localStorage.removeItem(USED.key); } catch {}
-      }
+      get(){ try { return localStorage.getItem(USED.key) === "1"; } catch { return false; } },
+      set(v){ try { localStorage.setItem(USED.key, v ? "1" : "0"); } catch {} },
+      clear(){ try { localStorage.removeItem(USED.key); } catch {} }
     };
 
-    /* =========================================================
-       TOAST (alert 置き換え)
-       ========================================================= */
-
     function toast(type, title, msg, ms=2400){
-      const host = document.getElementById("toastHost");
+      const host = $("toastHost");
       const el = document.createElement("div");
       el.className = `toast ${type || ""}`;
       el.innerHTML = `
@@ -621,51 +583,30 @@
       `;
       el.querySelector(".ttitle").textContent = title || "通知";
       el.querySelector(".tmsg").textContent = msg || "";
-
-      const remove = () => {
-        el.classList.remove("show");
-        setTimeout(() => el.remove(), 180);
-      };
+      const remove = () => { el.classList.remove("show"); setTimeout(() => el.remove(), 180); };
       el.querySelector(".tclose").addEventListener("click", remove);
-
       host.appendChild(el);
       requestAnimationFrame(() => el.classList.add("show"));
       setTimeout(remove, ms);
     }
 
-    /* =========================================================
-       DEBUG HELPER
-       ========================================================= */
-
     const DBG = {
-      lastError: null,
       setError(err){
-        DBG.lastError = err;
-        const box = document.getElementById("dbgErr");
+        const box = $("dbgErr");
         if (!box) return;
-        if (!err){
-          box.style.display = "none";
-          box.textContent = "";
-          return;
-        }
-        box.style.display = "";
+        if (!err){ box.style.display="none"; box.textContent=""; return; }
+        box.style.display="";
         box.textContent = String(err?.stack || err?.message || err);
       }
     };
-
-    function dbgSet(id, val){
-      const el = document.getElementById(id);
-      if (el) el.textContent = (val === undefined || val === null) ? "--" : String(val);
-    }
+    function dbgSet(id, val){ const el=$(id); if (el) el.textContent = (val==null) ? "--" : String(val); }
 
     /* =========================================================
-       COUPON UI
+       COUPON (current)
        ========================================================= */
-
     function formatJP(d){
       return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
     }
-
     function getStepByHour(h){
       for (let i=0;i<CONFIG.steps.length;i++){
         const s = CONFIG.steps[i];
@@ -673,150 +614,254 @@
       }
       return { index:0, ...CONFIG.steps[0] };
     }
+    function getCurrentCoupon(){
+      const now = new Date();
+      const step = getStepByHour(now.getHours());
+      const key = todayKey();
+      return {
+        now, step,
+        title: ($("couponTitle")?.textContent || "今日の早得").trim(),
+        deadlineText: `${CONFIG.deadline} まで`,
+        key
+      };
+    }
 
     function updateCouponUI(){
-      const now = new Date();
-      const h = now.getHours();
-      const step = getStepByHour(h);
+      const c = getCurrentCoupon();
+      const now = c.now;
+      const step = c.step;
 
-      document.getElementById("timeText").textContent =
-        `本日 ${pad2(now.getMonth()+1)}/${pad2(now.getDate())} ${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
+      $("timeText").textContent = `本日 ${pad2(now.getMonth()+1)}/${pad2(now.getDate())} ${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
+      $("offText").innerHTML = `${step.rate}<span>% OFF</span>`;
+      $("deadlineText").textContent = c.deadlineText;
+      $("nowText").textContent = `現在 ${formatJP(now)}`;
 
-      document.getElementById("offText").innerHTML = `${step.rate}<span>% OFF</span>`;
-      document.getElementById("deadlineText").textContent = `${CONFIG.deadline} まで`;
-      document.getElementById("nowText").textContent = `現在 ${formatJP(now)}`;
-
-      // 利用済みでない時だけ「現在の早得」を表示（利用済み時は applyUsedUI が上書き）
       if (!USED.get()){
-        const pill = document.getElementById("statusPill");
+        const pill = $("statusPill");
         pill.classList.remove("used");
         pill.textContent = `本日は「${step.label}」`;
       }
 
-      // active step highlight
-      for (const s of CONFIG.steps) document.getElementById(s.id).classList.remove("active");
-      document.getElementById(step.id).classList.add("active");
+      for (const s of CONFIG.steps) $(s.id).classList.remove("active");
+      $(step.id).classList.add("active");
 
-      // meter (1日を0-100%で表現)
       const minutes = now.getHours()*60 + now.getMinutes();
       const pct = Math.max(0, Math.min(100, (minutes / (24*60)) * 100));
-      document.getElementById("meterBar").style.width = `${pct.toFixed(1)}%`;
+      $("meterBar").style.width = `${pct.toFixed(1)}%`;
     }
-
-    function setHint(text){ document.getElementById("hintText").textContent = text; }
-    function setEnv(text){ document.getElementById("envText").textContent = text; }
-    function setLiffChip(text){ document.getElementById("liffChip").textContent = text; }
-
-    function setLiffNote(mode){
-      const el = document.getElementById("liffNote");
-      if (!el) return;
-
-      // mode: "OK" | "NEED_LIFF" | "NEED_LOGIN" | "ERROR"
-      if (mode === "OK") {
-        el.textContent = "LIFFで起動中（ログイン済）：プロフィール表示・共有・閉じるが利用できます。";
-        return;
-      }
-      if (mode === "NEED_LOGIN") {
-        el.textContent = "ログインすると、ユーザー名表示や共有がより自然になります。";
-        el.style.display = "";
-        return;
-      }
-      if (mode === "ERROR") {
-        el.textContent = "LIFF初期化に失敗しました。LIFF設定とURLを確認してください。";
-        el.style.display = "";
-        return;
-      }
-      // NEED_LIFF（通常ブラウザ）
-      el.innerHTML = '※ LIFF URL（<span class="mono">liff.line.me</span>）から開くと、ユーザー名表示や共有がもっと自然になります。';
-      el.style.display = "";
-    }
-
-    /* =========================================================
-       USED UI APPLY
-       ========================================================= */
 
     function applyUsedUI(){
       const isUsed = USED.get();
-      const coupon = document.getElementById("couponBox");
-      const badge = document.getElementById("usedBadge");
-      const pill = document.getElementById("statusPill");
-      const btn = document.getElementById("useBtn");
+      const coupon = $("couponBox");
+      const badge = $("usedBadge");
+      const pill = $("statusPill");
+      const btn = $("useBtn");
 
       if (isUsed){
         coupon?.classList.add("is-used");
         if (badge) badge.style.display = "";
-        if (pill){
-          pill.classList.add("used");
-          pill.textContent = "利用済み（サンプル）";
-        }
-        if (btn){
-          btn.disabled = true;
-          btn.textContent = "利用済み（サンプル）";
-        }
+        if (pill){ pill.classList.add("used"); pill.textContent = "利用済み（サンプル）"; }
+        if (btn){ btn.disabled = true; btn.textContent = "利用済み（サンプル）"; }
       } else {
         coupon?.classList.remove("is-used");
         if (badge) badge.style.display = "none";
-        // statusPill は updateCouponUI() が上書きするのでここでは触らない
         if (pill) pill.classList.remove("used");
-        if (btn){
-          btn.disabled = false;
-          btn.textContent = "このクーポンを使う（サンプル）";
+        if (btn){ btn.disabled = false; btn.textContent = "このクーポンを使う（サンプル）"; }
+      }
+
+      dbgSet("dbgUsed", isUsed);
+      dbgSet("dbgMini", isUsed ? "used=1" : "used=0");
+    }
+
+    /* =========================================================
+       LIFF / ENV
+       ========================================================= */
+    const ENV = {
+      hasLiff: () => typeof window.liff !== "undefined",
+      isInClient: false,
+      isLoggedIn: false,
+      profile: null
+    };
+
+    function setHint(text){ $("hintText").textContent = text; }
+    function setEnv(text){ $("envText").textContent = text; }
+    function setLiffChip(text){ $("liffChip").textContent = text; }
+    function setLiffNote(mode){
+      const el = $("liffNote");
+      if (!el) return;
+
+      if (mode === "OK") { el.textContent = "LIFFで起動中：共有・閉じるが自然に動作します。"; return; }
+      if (mode === "NEED_LOGIN") { el.textContent = "ログインすると、ユーザー名表示や共有がより自然になります。"; el.style.display=""; return; }
+      if (mode === "ERROR") { el.textContent = "LIFF初期化に失敗しました。LIFF設定とURLを確認してください。"; el.style.display=""; return; }
+
+      el.innerHTML = '※ LIFF URL（<span class="mono">liff.line.me</span>）から開くと、ユーザー名表示や共有がもっと自然になります。';
+      el.style.display = "";
+    }
+
+    async function initLiffOrBrowser(){
+      dbgSet("dbgLiffId", CONFIG.liffId);
+      dbgSet("dbgHasLiff", ENV.hasLiff());
+      dbgSet("dbgUA", navigator.userAgent);
+
+      if (!ENV.hasLiff()){
+        ENV.isInClient = false;
+        ENV.isLoggedIn = false;
+        setHint("ブラウザで起動しました");
+        setEnv("ブラウザ（LIFFなし）");
+        setLiffChip("LIFF: なし");
+        setLiffNote("NEED_LIFF");
+        dbgSet("dbgInClient", false);
+        dbgSet("dbgLoggedIn", false);
+        return;
+      }
+
+      try{
+        setHint("LIFF初期化中…");
+        await liff.init({ liffId: CONFIG.liffId });
+
+        ENV.isInClient = !!liff.isInClient();
+        ENV.isLoggedIn = !!liff.isLoggedIn();
+
+        dbgSet("dbgInClient", ENV.isInClient);
+        dbgSet("dbgLoggedIn", ENV.isLoggedIn);
+        dbgSet("dbgOS", liff.getOS?.() || "--");
+        dbgSet("dbgLang", liff.getLanguage?.() || "--");
+
+        if (ENV.isLoggedIn){
+          try{
+            ENV.profile = await liff.getProfile();
+            const name = (ENV.profile?.displayName || "").trim();
+            if (name) $("helloText").textContent = `${name}さん、いま使うとどれくらいお得？`;
+            const img = ENV.profile?.pictureUrl;
+            if (img){
+              $("avatarBox").innerHTML = `<img alt="" src="${img}">`;
+            } else {
+              $("avatarBox").textContent = "H";
+            }
+          } catch {}
+          setHint(ENV.isInClient ? "LINE内で起動しました" : "LIFFで起動しました");
+          setEnv(ENV.isInClient ? "LINE内（LIFF）" : "LIFF（外部ブラウザ）");
+          setLiffChip("LIFF: OK");
+          setLiffNote("OK");
+        } else {
+          setHint("LIFFログイン未実施");
+          setEnv(ENV.isInClient ? "LINE内（LIFF・未ログイン）" : "LIFF（未ログイン）");
+          setLiffChip("LIFF: 未ログイン");
+          setLiffNote("NEED_LOGIN");
+        }
+      } catch(e){
+        DBG.setError(e);
+        ENV.isInClient = false;
+        ENV.isLoggedIn = false;
+        setHint("LIFF初期化に失敗しました");
+        setEnv("ブラウザ（LIFFエラー）");
+        setLiffChip("LIFF: エラー");
+        setLiffNote("ERROR");
+      }
+    }
+
+    /* =========================================================
+       SHARE / CLOSE
+       ========================================================= */
+    async function shareSmart(){
+      const title = "HAYA-TOKU（早得クーポン）";
+      const text = "早得クーポン（サンプル）を共有します";
+      const url = location.href;
+
+      // 1) LIFF shareTargetPicker（LINE内で自然）
+      if (ENV.hasLiff() && ENV.isLoggedIn && liff.shareTargetPicker){
+        try{
+          await liff.shareTargetPicker([{ type:"text", text: `${text}\n${url}` }]);
+          toast("ok","共有完了","LINEで共有しました");
+          return;
+        } catch(e){
+          // ユーザーキャンセル等は黙って次へ
         }
       }
 
-      // debug（開発者パネル用）
-      const dbgUsed = document.getElementById("dbgUsed");
-      if (dbgUsed) dbgUsed.textContent = String(isUsed);
+      // 2) Web Share API
+      if (navigator.share){
+        try{
+          await navigator.share({ title, text, url });
+          toast("ok","共有完了","共有しました");
+          return;
+        } catch(e){
+          // ユーザーキャンセル等は黙って次へ
+        }
+      }
 
-      // mini（summary右側）
-      const dbgMini = document.getElementById("dbgMini");
-      if (dbgMini) dbgMini.textContent = isUsed ? "used=1" : "used=0";
+      // 3) Clipboard fallback
+      try{
+        await navigator.clipboard.writeText(url);
+        toast("ok","コピー完了","URLをコピーしました");
+      } catch(e){
+        const ok = window.prompt("このURLをコピーしてください", url);
+        if (ok !== null) toast("info","コピー","URLを表示しました");
+        else toast("ng","コピー失敗","コピーできませんでした");
+      }
+    }
+
+    function closeSmart(){
+      // LINE内なら閉じるが自然。無理なら通常の戻る/閉じる案内。
+      if (ENV.hasLiff() && ENV.isInClient && liff.closeWindow){
+        liff.closeWindow();
+        return;
+      }
+      toast("info","閉じる","ブラウザの「戻る」またはタブを閉じてください");
     }
 
     /* =========================================================
        USE CONFIRM MODAL
        ========================================================= */
+    const USE_CONFIRM = { timerId:null, remaining:CONFIG.useConfirmSeconds, isOpen:false, session:0 };
 
-    const USE_CONFIRM = {
-      seconds: 5,        // 自動確定までの秒数
-      timerId: null,
-      remaining: 5,
-      isOpen: false,
-      session: 0,         // タイマーの取り違え防止（openごとに増える）
-    };
-
-    function getCouponInfoText(){
-      // モーダルで「クーポン名」を強調表示（店員さんに一目で伝わる）
-      return document.getElementById("couponTitle")?.textContent?.trim() || "早得クーポン";
+    function syncModalInfo(){
+      const c = getCurrentCoupon();
+      $("mRate").textContent = c.step.rate;
+      $("mDeadline").textContent = c.deadlineText;
+      $("mBand").textContent = c.step.label;
+      $("mTitle").textContent = `クーポン：${c.title}`;
+      $("mKey").textContent = `本日キー: ${c.key}`;
     }
 
-    function openUseModal(){
-      // すでに利用済みなら開かない
-      if (USED.get()){
-        toast("info", "利用済み", "このクーポンは既に利用済みです（サンプル）");
+    function setCancelButtonState(){
+      const btn = $("btnCancelUse");
+      if (!btn) return;
+
+      // LINE内で禁止するなら無効化（表示は保ったまま＝見た目を同一にする）
+      if (CONFIG.cancelPolicy === "denyInClient" && ENV.isInClient){
+        btn.disabled = true;
+        btn.textContent = "キャンセル不可";
+        $("mNote").textContent = "※ LINE内運用ではキャンセル不可（設定）です。5秒後に自動確定します。";
         return;
       }
 
-      // 新しいセッションとして開始（古いタイマーを無効化）
-      const mySession = ++USE_CONFIRM.session;
+      btn.disabled = false;
+      btn.textContent = "キャンセル";
+      $("mNote").textContent = "※ キャンセルしない場合、5秒後に自動で「利用済み（サンプル）」になります";
+    }
 
-      USE_CONFIRM.remaining = USE_CONFIRM.seconds;
+    function openUseModal(){
+      if (USED.get()){
+        toast("info","利用済み","このクーポンは既に利用済みです（サンプル）");
+        return;
+      }
+
+      const mySession = ++USE_CONFIRM.session;
+      USE_CONFIRM.remaining = CONFIG.useConfirmSeconds;
       USE_CONFIRM.isOpen = true;
 
-      const modal = document.getElementById("useModal");
-      const cd = document.getElementById("useCountdown");
-      const info = document.getElementById("useCouponInfo");
-      if (cd) cd.textContent = String(USE_CONFIRM.remaining);
-      if (info) info.textContent = getCouponInfoText();
+      syncModalInfo();
+      setCancelButtonState();
 
-      modal?.classList.add("is-open");
-      modal?.setAttribute("aria-hidden", "false");
+      $("useCountdown").textContent = String(USE_CONFIRM.remaining);
+      $("useModal")?.classList.add("is-open");
+      $("useModal")?.setAttribute("aria-hidden","false");
 
       startUseCountdown(mySession);
     }
 
     function closeUseModal(reason){
-      // 閉じる＝セッションを進めて、残っているタイマーを確実に無効化
       USE_CONFIRM.isOpen = false;
       USE_CONFIRM.session += 1;
 
@@ -825,56 +870,40 @@
         USE_CONFIRM.timerId = null;
       }
 
-      const modal = document.getElementById("useModal");
-      modal?.classList.remove("is-open");
-      modal?.setAttribute("aria-hidden", "true");
+      $("useModal")?.classList.remove("is-open");
+      $("useModal")?.setAttribute("aria-hidden","true");
 
-      if (reason === "cancel"){
-        toast("info", "キャンセル", "利用はキャンセルされました");
-      }
+      if (reason === "cancel") toast("info","キャンセル","利用はキャンセルされました");
     }
 
     function confirmUse(source, mySession){
-      // 閉じた後の多重確定を防ぐ
       if (!USE_CONFIRM.isOpen) return;
-      // セッションが違う（キャンセル/再オープン後の遅延確定）なら無視
       if (typeof mySession === "number" && mySession !== USE_CONFIRM.session) return;
 
-      // まず止める（ここでタイマーも完全停止）
       closeUseModal();
-
-      // 利用済みにする（サンプル）
       USED.set(true);
       applyUsedUI();
       updateCouponUI();
 
-      if (source === "auto"){
-        toast("ok", "利用確定", "30秒経過のため自動で確定しました（サンプル）");
-      } else {
-        toast("ok", "利用確定", "利用を確定しました（サンプル）");
-      }
+      toast("ok","利用確定", source === "auto"
+        ? "自動で利用確定しました（サンプル）"
+        : "利用を確定しました（サンプル）"
+      );
     }
 
     function startUseCountdown(mySession){
-      const cd = document.getElementById("useCountdown");
-
-      // 二重起動防止
       if (USE_CONFIRM.timerId){
         clearInterval(USE_CONFIRM.timerId);
         USE_CONFIRM.timerId = null;
       }
-
       USE_CONFIRM.timerId = setInterval(() => {
-        // すでに閉じた / 別セッションになった → 何もしないで停止
         if (!USE_CONFIRM.isOpen || mySession !== USE_CONFIRM.session){
           clearInterval(USE_CONFIRM.timerId);
           USE_CONFIRM.timerId = null;
           return;
         }
-
         USE_CONFIRM.remaining -= 1;
-        if (cd) cd.textContent = String(Math.max(0, USE_CONFIRM.remaining));
-
+        $("useCountdown").textContent = String(Math.max(0, USE_CONFIRM.remaining));
         if (USE_CONFIRM.remaining <= 0){
           clearInterval(USE_CONFIRM.timerId);
           USE_CONFIRM.timerId = null;
@@ -883,68 +912,58 @@
       }, 1000);
     }
 
-document.getElementById("useBtn").addEventListener("click", () => {
-      openUseModal();
-    });
+    function tryCancelUse(){
+      const btn = $("btnCancelUse");
+      if (btn?.disabled) return;
 
-    // 店員確認モーダル
-    document.getElementById("btnConfirmUse").addEventListener("click", () => {
-      confirmUse("manual", USE_CONFIRM.session);
-    });
-    document.getElementById("btnCancelUse").addEventListener("click", () => {
+      if (CONFIG.cancelPolicy === "confirmInClient" && ENV.isInClient){
+        const ok = window.confirm("キャンセルしますか？（LINE内運用）");
+        if (!ok) return;
+      }
       closeUseModal("cancel");
-    });
-    document.getElementById("useModalBackdrop").addEventListener("click", () => {
-      closeUseModal("cancel");
-    });
+    }
 
-    // 共有 / 閉じる
-    document.getElementById("shareBtn").addEventListener("click", async () => {
-      await shareSmart();
-    });
-    document.getElementById("closeBtn").addEventListener("click", () => {
-      closeSmart();
-    });
+    /* =========================================================
+       EVENTS
+       ========================================================= */
+    $("useBtn").addEventListener("click", openUseModal);
+    $("btnConfirmUse").addEventListener("click", () => confirmUse("manual", USE_CONFIRM.session));
+    $("btnCancelUse").addEventListener("click", tryCancelUse);
+    $("useModalBackdrop").addEventListener("click", tryCancelUse);
 
-    
+    $("shareBtn").addEventListener("click", shareSmart);
+    $("closeBtn").addEventListener("click", closeSmart);
 
-    // 右上：URLコピー / 情報
-    document.getElementById("copyBtn")?.addEventListener("click", async () => {
+    $("copyBtn")?.addEventListener("click", async () => {
+      const url = location.href;
       try{
-        await navigator.clipboard.writeText(location.href);
-        toast("ok", "コピー完了", "URLをコピーしました");
+        await navigator.clipboard.writeText(url);
+        toast("ok","コピー完了","URLをコピーしました");
       } catch(e){
-        // Clipboard APIが使えない場合の最小fallback
-        const ok = window.prompt("このURLをコピーしてください", location.href);
-        if (ok !== null) toast("info", "コピー", "URLを表示しました");
-        else toast("ng", "コピー失敗", "コピーできませんでした");
+        const ok = window.prompt("このURLをコピーしてください", url);
+        if (ok !== null) toast("info","コピー","URLを表示しました");
+        else toast("ng","コピー失敗","コピーできませんでした");
       }
     });
-
-    document.getElementById("infoBtn")?.addEventListener("click", () => {
-      toast("info", "情報", "LINE内（LIFF）では共有がより自然に動きます。ブラウザでも同じ画面で動きます。");
+    $("infoBtn")?.addEventListener("click", () => {
+      toast("info","情報","LINE内（LIFF）では共有・閉じるがより自然に動きます。ブラウザでも同じ画面で動きます。");
     });
-// 利用済みリセット（開発用）
-    document.getElementById("btnResetUsed").addEventListener("click", () => {
+
+    $("btnResetUsed").addEventListener("click", () => {
       USED.clear();
       applyUsedUI();
       updateCouponUI();
-      toast("info", "リセット完了", "利用済み（サンプル）を解除しました");
+      toast("info","リセット完了","利用済み（サンプル）を解除しました");
     });
 
     /* =========================================================
        BOOT
        ========================================================= */
-
     updateCouponUI();
     applyUsedUI();
     initLiffOrBrowser();
 
-    // 1分ごとに表示更新
-    setInterval(() => {
-      updateCouponUI();
-      applyUsedUI();
-    }, 60 * 1000);
+    setInterval(() => { updateCouponUI(); applyUsedUI(); }, 60 * 1000);
   </script>
 </body>
 </html>
