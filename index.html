@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>早得クーポン | HAYA-TOKU（🍊ver）</title>
+  <title>早得クーポン | HAYA-TOKU</title>
 
   <!-- LIFF SDK（ブラウザでも読み込みOK。使える時だけ利用） -->
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
@@ -21,6 +21,17 @@
       --ok:#0a7f3f;
       --ng:#b42318;
       --info:#1f5fbf;
+
+      /* 閉じるボタン：赤身のある濃ブラウン（黒より柔らかく、でも締まる） */
+      --closeBg:#3a1716;      /* 深い赤茶 */
+      --closeBg2:#52201e;     /* ほんの少し明るい赤茶 */
+      --closeBorder:rgba(255,255,255,.14);
+      --closeShadow:0 14px 30px rgba(58,23,22,.28);
+
+      /* モーダル内：クーポン名強調用 */
+      --modalNameBg: rgba(255,122,0,.14);
+      --modalNameBorder: rgba(255,122,0,.22);
+      --modalNameText: #1f140c;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
@@ -181,7 +192,12 @@
     .btn{border:0;border-radius:16px;padding:14px 14px;font-size:15px;font-weight:1100;cursor:pointer;}
     .btn.primary{background:linear-gradient(180deg,var(--brand),var(--brand2));color:#fff;box-shadow:0 14px 30px rgba(255,90,0,.22);}
     .btn.secondary{background:#fff;color:var(--text);border:1px solid rgba(255,122,0,.16);}
-    .btn.danger{background:#111827;color:#fff;}
+    .btn.close{
+      background: linear-gradient(180deg, var(--closeBg2), var(--closeBg));
+      color:#fff;
+      border:1px solid var(--closeBorder);
+      box-shadow: var(--closeShadow);
+    }
     .btn:active{transform:translateY(1px)}
     .btn:disabled{cursor:not-allowed;opacity:.65;filter:grayscale(.1);transform:none;}
     .minirow{display:flex;gap:10px;}
@@ -269,7 +285,11 @@
     /* Modal */
     .modal{position: fixed;inset: 0;z-index: 1200;display: none;}
     .modal.is-open{ display:block; }
-    .modalBackdrop{position:absolute;inset:0;background: rgba(17, 24, 39, .55);backdrop-filter: blur(4px);}
+    .modalBackdrop{
+      position:absolute;inset:0;
+      background: rgba(17, 24, 39, .55);
+      backdrop-filter: blur(4px);
+    }
     .modalCard{
       position: absolute;left: 50%;top: 50%;transform: translate(-50%, -50%);
       width: min(520px, calc(100% - 24px));
@@ -281,7 +301,7 @@
     }
     .modalTitle{font-weight: 1100;font-size: 16px;color: #6b3f1a;}
 
-    /* 店員さんに“見せる用”の情報カード */
+    /* 店員さん“見せる用”カード */
     .useCard{
       margin-top:10px;
       border-radius:14px;
@@ -312,12 +332,34 @@
       font-weight:1000;
       line-height:1.35;
     }
+
+    /* ★ここを強化：クーポン名を割引率に負けない存在感にする */
     .useName{
-      font-size:14px;
-      font-weight:1200;
-      color:#111827;
-      line-height:1.35;
+      border-radius:12px;
+      border:1px solid var(--modalNameBorder);
+      background:
+        linear-gradient(180deg, rgba(255,122,0,.18), rgba(255,255,255,.0)),
+        var(--modalNameBg);
+      padding:10px 10px;
+      line-height:1.25;
+      color: var(--modalNameText);
+      display:flex;
+      flex-direction:column;
+      gap:4px;
     }
+    .useName .label{
+      font-size:11px;
+      font-weight:1100;
+      color:#6b3f1a;
+      letter-spacing:.3px;
+    }
+    .useName .name{
+      font-size:18px;       /* 大きく */
+      font-weight:1300;     /* 太く */
+      color:#111827;
+      letter-spacing:.2px;
+    }
+
     .useKey{
       font-family:var(--mono);
       font-size:11px;
@@ -327,6 +369,35 @@
     .modalMsg{margin-top: 10px;font-size: 14px;line-height: 1.5;}
     .modalBtns{display: grid;grid-template-columns: 1fr 1fr;gap: 10px;margin-top: 12px;}
     .modalNote{margin-top: 10px;font-size: 12px;line-height: 1.5;}
+
+    /* 確定済みモード（モーダル内） */
+    .confirmedHeadline{
+      margin-top: 10px;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(10,127,63,.20);
+      background: rgba(10,127,63,.08);
+      color: #0a3b20;
+      display:none;
+    }
+    .confirmedHeadline .big{
+      font-weight: 1200;
+      font-size: 16px;
+      line-height: 1.35;
+    }
+    .confirmedHeadline .sub{
+      margin-top: 4px;
+      font-size: 12px;
+      color: rgba(10,59,32,.85);
+      line-height: 1.4;
+    }
+    .tapToClose{
+      margin-top: 10px;
+      font-size: 12px;
+      color: #374151;
+      font-weight: 1000;
+      display:none;
+    }
   </style>
 </head>
 
@@ -490,7 +561,7 @@
       <button class="btn primary" id="useBtn">このクーポンを使う（サンプル）</button>
       <div class="minirow">
         <button class="btn secondary" id="shareBtn" style="width:100%">友だちに共有</button>
-        <button class="btn danger" id="closeBtn" style="width:100%">閉じる</button>
+        <button class="btn close" id="closeBtn" style="width:100%">閉じる</button>
       </div>
     </div>
   </div>
@@ -501,6 +572,11 @@
     <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="useModalTitle">
       <div class="modalTitle" id="useModalTitle">店員さんに見せてください！</div>
 
+      <div class="confirmedHeadline" id="confirmedHeadline" aria-label="確定済みメッセージ">
+        <div class="big" id="confirmedLine1">--</div>
+        <div class="sub" id="confirmedLine2">--</div>
+      </div>
+
       <div class="useCard" aria-label="店員確認用クーポン情報">
         <div class="useBig">
           <div class="useOff"><span id="mRate">--</span><small>% OFF</small></div>
@@ -509,21 +585,31 @@
             <div>時間帯：<span id="mBand">--</span></div>
           </div>
         </div>
-        <div class="useName" id="mTitle">クーポン：--</div>
+
+        <!-- ★ここが「目立たない」問題の本丸：構造はそのままに、表示を強化 -->
+        <div class="useName" id="mTitleWrap">
+          <div class="label">クーポン名</div>
+          <div class="name" id="mTitle">--</div>
+        </div>
+
         <div class="useKey" id="mKey">--</div>
       </div>
 
-      <div class="modalMsg">
-        カウントダウン：あと <b class="mono" id="useCountdown">5</b> 秒で確定
+      <div class="modalMsg" id="countdownMsg">
+        カウントダウン：あと <b class="mono" id="useCountdown">10</b> 秒で確定
       </div>
 
-      <div class="modalBtns">
+      <div class="modalBtns" id="countdownBtns">
         <button type="button" class="btn primary" id="btnConfirmUse">利用を確定</button>
         <button type="button" class="btn secondary" id="btnCancelUse">キャンセル</button>
       </div>
 
-      <div class="modalNote muted" id="mNote">
-        ※ キャンセルしない場合、5秒後に自動で「利用済み（サンプル）」になります
+      <div class="modalNote muted" id="countdownNote">
+        ※ キャンセルしない場合、10秒後に自動で「利用済み（サンプル）」になります
+      </div>
+
+      <div class="tapToClose" id="tapToClose">
+        ※ 閉じるには <b>背景</b>（暗いところ）をタップしてください
       </div>
     </div>
   </div>
@@ -537,12 +623,9 @@
     const CONFIG = {
       liffId: "2009179515-rJ1LaY8l",
       deadline: "23:59",
-      useConfirmSeconds: 5,
+      useConfirmSeconds: 10,
 
-      // キャンセル方針（LINE内運用を想定して整理）
-      // - "allow"           : 常に許可
-      // - "confirmInClient" : LINE内だけキャンセル時に確認（推奨）
-      // - "denyInClient"    : LINE内はキャンセル不可（ボタン無効）
+      // キャンセル方針：B（LINE内だけキャンセル時に確認）
       cancelPolicy: "confirmInClient",
 
       steps: [
@@ -768,29 +851,22 @@
       const text = "早得クーポン（サンプル）を共有します";
       const url = location.href;
 
-      // 1) LIFF shareTargetPicker（LINE内で自然）
       if (ENV.hasLiff() && ENV.isLoggedIn && liff.shareTargetPicker){
         try{
           await liff.shareTargetPicker([{ type:"text", text: `${text}\n${url}` }]);
           toast("ok","共有完了","LINEで共有しました");
           return;
-        } catch(e){
-          // ユーザーキャンセル等は黙って次へ
-        }
+        } catch(e){}
       }
 
-      // 2) Web Share API
       if (navigator.share){
         try{
           await navigator.share({ title, text, url });
           toast("ok","共有完了","共有しました");
           return;
-        } catch(e){
-          // ユーザーキャンセル等は黙って次へ
-        }
+        } catch(e){}
       }
 
-      // 3) Clipboard fallback
       try{
         await navigator.clipboard.writeText(url);
         toast("ok","コピー完了","URLをコピーしました");
@@ -802,7 +878,6 @@
     }
 
     function closeSmart(){
-      // LINE内なら閉じるが自然。無理なら通常の戻る/閉じる案内。
       if (ENV.hasLiff() && ENV.isInClient && liff.closeWindow){
         liff.closeWindow();
         return;
@@ -811,57 +886,87 @@
     }
 
     /* =========================================================
-       USE CONFIRM MODAL
+       USE CONFIRM MODAL (10秒 / B / 確定後は出しっぱなし)
        ========================================================= */
-    const USE_CONFIRM = { timerId:null, remaining:CONFIG.useConfirmSeconds, isOpen:false, session:0 };
+    const USE_CONFIRM = {
+      timerId: null,
+      remaining: CONFIG.useConfirmSeconds,
+      isOpen: false,
+      session: 0,
+      state: "countdown" // "countdown" | "confirmed"
+    };
 
     function syncModalInfo(){
       const c = getCurrentCoupon();
       $("mRate").textContent = c.step.rate;
       $("mDeadline").textContent = c.deadlineText;
       $("mBand").textContent = c.step.label;
-      $("mTitle").textContent = `クーポン：${c.title}`;
+
+      /* ★クーポン名表示：プレーン文字ではなく、name部にだけ入れる */
+      $("mTitle").textContent = c.title;
+
       $("mKey").textContent = `本日キー: ${c.key}`;
+      return c;
     }
 
-    function setCancelButtonState(){
-      const btn = $("btnCancelUse");
-      if (!btn) return;
+    function setModalMode(mode){
+      USE_CONFIRM.state = mode;
 
-      // LINE内で禁止するなら無効化（表示は保ったまま＝見た目を同一にする）
-      if (CONFIG.cancelPolicy === "denyInClient" && ENV.isInClient){
-        btn.disabled = true;
-        btn.textContent = "キャンセル不可";
-        $("mNote").textContent = "※ LINE内運用ではキャンセル不可（設定）です。5秒後に自動確定します。";
+      const countdownMsg = $("countdownMsg");
+      const countdownBtns = $("countdownBtns");
+      const countdownNote = $("countdownNote");
+
+      const confirmedHeadline = $("confirmedHeadline");
+      const tapToClose = $("tapToClose");
+
+      if (mode === "countdown"){
+        confirmedHeadline.style.display = "none";
+        tapToClose.style.display = "none";
+
+        countdownMsg.style.display = "";
+        countdownBtns.style.display = "";
+        countdownNote.style.display = "";
+
+        $("useModalTitle").textContent = "店員さんに見せてください！";
         return;
       }
 
-      btn.disabled = false;
-      btn.textContent = "キャンセル";
-      $("mNote").textContent = "※ キャンセルしない場合、5秒後に自動で「利用済み（サンプル）」になります";
+      countdownMsg.style.display = "none";
+      countdownBtns.style.display = "none";
+      countdownNote.style.display = "none";
+
+      confirmedHeadline.style.display = "";
+      tapToClose.style.display = "";
+
+      $("useModalTitle").textContent = "確定しました";
     }
 
     function openUseModal(){
       if (USED.get()){
-        toast("info","利用済み","このクーポンは既に利用済みです（サンプル）");
+        toast("info", "利用済み", "このクーポンは既に利用済みです（サンプル）");
         return;
       }
 
       const mySession = ++USE_CONFIRM.session;
+
       USE_CONFIRM.remaining = CONFIG.useConfirmSeconds;
       USE_CONFIRM.isOpen = true;
 
-      syncModalInfo();
-      setCancelButtonState();
+      const c = syncModalInfo();
+
+      setModalMode("countdown");
 
       $("useCountdown").textContent = String(USE_CONFIRM.remaining);
-      $("useModal")?.classList.add("is-open");
-      $("useModal")?.setAttribute("aria-hidden","false");
+      $("countdownNote").textContent = `※ キャンセルしない場合、${CONFIG.useConfirmSeconds}秒後に自動で「利用済み（サンプル）」になります`;
+
+      const modal = $("useModal");
+      modal.classList.add("is-open");
+      modal.setAttribute("aria-hidden","false");
 
       startUseCountdown(mySession);
     }
 
-    function closeUseModal(reason){
+    function closeUseModal(){
       USE_CONFIRM.isOpen = false;
       USE_CONFIRM.session += 1;
 
@@ -870,24 +975,32 @@
         USE_CONFIRM.timerId = null;
       }
 
-      $("useModal")?.classList.remove("is-open");
-      $("useModal")?.setAttribute("aria-hidden","true");
-
-      if (reason === "cancel") toast("info","キャンセル","利用はキャンセルされました");
+      const modal = $("useModal");
+      modal.classList.remove("is-open");
+      modal.setAttribute("aria-hidden","true");
     }
 
     function confirmUse(source, mySession){
       if (!USE_CONFIRM.isOpen) return;
       if (typeof mySession === "number" && mySession !== USE_CONFIRM.session) return;
 
-      closeUseModal();
+      if (USE_CONFIRM.timerId){
+        clearInterval(USE_CONFIRM.timerId);
+        USE_CONFIRM.timerId = null;
+      }
+
       USED.set(true);
       applyUsedUI();
       updateCouponUI();
 
+      const c = syncModalInfo();
+      $("confirmedLine1").textContent = `${c.step.rate}% OFF（${c.step.label}）を確定しました`;
+      $("confirmedLine2").textContent = `店員さんに見せてください`;
+      setModalMode("confirmed");
+
       toast("ok","利用確定", source === "auto"
-        ? "自動で利用確定しました（サンプル）"
-        : "利用を確定しました（サンプル）"
+        ? `自動で利用を確定しました（${CONFIG.useConfirmSeconds}秒）`
+        : "利用を確定しました"
       );
     }
 
@@ -896,14 +1009,22 @@
         clearInterval(USE_CONFIRM.timerId);
         USE_CONFIRM.timerId = null;
       }
+
       USE_CONFIRM.timerId = setInterval(() => {
-        if (!USE_CONFIRM.isOpen || mySession !== USE_CONFIRM.session){
+        if (!USE_CONFIRM.isOpen || mySession !== USE_CONFIRM.session) {
           clearInterval(USE_CONFIRM.timerId);
           USE_CONFIRM.timerId = null;
           return;
         }
+        if (USE_CONFIRM.state !== "countdown"){
+          clearInterval(USE_CONFIRM.timerId);
+          USE_CONFIRM.timerId = null;
+          return;
+        }
+
         USE_CONFIRM.remaining -= 1;
         $("useCountdown").textContent = String(Math.max(0, USE_CONFIRM.remaining));
+
         if (USE_CONFIRM.remaining <= 0){
           clearInterval(USE_CONFIRM.timerId);
           USE_CONFIRM.timerId = null;
@@ -912,24 +1033,39 @@
       }, 1000);
     }
 
-    function tryCancelUse(){
-      const btn = $("btnCancelUse");
-      if (btn?.disabled) return;
+    function requestCancel(){
+      if (!USE_CONFIRM.isOpen || USE_CONFIRM.state !== "countdown") return;
 
       if (CONFIG.cancelPolicy === "confirmInClient" && ENV.isInClient){
-        const ok = window.confirm("キャンセルしますか？（LINE内運用）");
+        const ok = window.confirm("キャンセルしますか？");
         if (!ok) return;
       }
-      closeUseModal("cancel");
+
+      USE_CONFIRM.session += 1;
+      if (USE_CONFIRM.timerId){
+        clearInterval(USE_CONFIRM.timerId);
+        USE_CONFIRM.timerId = null;
+      }
+
+      closeUseModal();
+      toast("info", "キャンセル", "利用はキャンセルされました");
+    }
+
+    function backdropTap(){
+      if (!USE_CONFIRM.isOpen) return;
+      if (USE_CONFIRM.state === "confirmed"){
+        closeUseModal();
+      }
     }
 
     /* =========================================================
        EVENTS
        ========================================================= */
     $("useBtn").addEventListener("click", openUseModal);
+
     $("btnConfirmUse").addEventListener("click", () => confirmUse("manual", USE_CONFIRM.session));
-    $("btnCancelUse").addEventListener("click", tryCancelUse);
-    $("useModalBackdrop").addEventListener("click", tryCancelUse);
+    $("btnCancelUse").addEventListener("click", requestCancel);
+    $("useModalBackdrop").addEventListener("click", backdropTap);
 
     $("shareBtn").addEventListener("click", shareSmart);
     $("closeBtn").addEventListener("click", closeSmart);
@@ -945,8 +1081,9 @@
         else toast("ng","コピー失敗","コピーできませんでした");
       }
     });
+
     $("infoBtn")?.addEventListener("click", () => {
-      toast("info","情報","LINE内（LIFF）では共有・閉じるがより自然に動きます。ブラウザでも同じ画面で動きます。");
+      toast("info","情報","LINE内（LIFF）では共有がより自然に動きます。ブラウザでも同じ画面で動きます。");
     });
 
     $("btnResetUsed").addEventListener("click", () => {
