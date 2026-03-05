@@ -351,6 +351,35 @@
     function setEnv(text){ document.getElementById("envText").textContent = text; }
     function setLiffChip(text){ document.getElementById("liffChip").textContent = text; }
 
+    function setLiffNote(mode){
+  const el = document.getElementById("liffNote");
+  if (!el) return;
+
+  // mode: "OK" | "NEED_LIFF" | "NEED_LOGIN" | "ERROR"
+  if (mode === "OK") {
+    // ✅ 今のスクショ状態ではこれが自然
+    el.textContent = "LIFFで起動中（ログイン済）：プロフィール表示・共有・閉じるが利用できます。";
+    // もし「出したくない」なら次の1行に変更
+    // el.style.display = "none";
+    return;
+  }
+
+  if (mode === "NEED_LOGIN") {
+    el.textContent = "ログインすると、ユーザー名表示や共有がより自然になります。";
+    el.style.display = "";
+    return;
+  }
+
+  if (mode === "ERROR") {
+    el.textContent = "LIFF初期化に失敗しました。LIFF設定とURLを確認してください。";
+    el.style.display = "";
+    return;
+  }
+
+  // NEED_LIFF（通常ブラウザ）
+  el.innerHTML = '※ LIFF URL（<span class="mono">liff.line.me</span>）から開くと、ユーザー名表示や共有がもっと自然になります。';
+  el.style.display = "";
+}
     // ===== 共通ボタン（まずはブラウザでも動くように） =====
     document.getElementById("copyBtn").addEventListener("click", async () => {
       try{
