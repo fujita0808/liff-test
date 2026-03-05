@@ -683,7 +683,12 @@
     document.getElementById("closeBtn").addEventListener("click", () => {
       closeSmart();
     });
-
+document.getElementById("btnResetUsed")?.addEventListener("click", () => {
+  USED.clear();        // localStorageから今日の利用済みフラグを削除
+  applyUsedUI();       // UI更新
+  updateCouponUI();    // 割引表示などを戻す
+  toast("info", "リセット完了", "利用済み（サンプル）を解除しました");
+});
     updateCouponUI();
     applyUsedUI();
     setInterval(() => {
