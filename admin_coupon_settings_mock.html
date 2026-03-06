@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>クーポン管理（最低ライン / オレンジテーマ）</title>
+  <style>
+    :root{
+      /* ===== HAYA-TOKU Orange Theme ===== */
+      --o1:#FF7A00;   /* main */
+      --o2:#FFB300;   /* sub */
+      --o3:#FF5A00;   /* accent */
+      --bg:#fff7ec;   /* warm bg */
+      --card:#ffffff;
+      --text:#111827;
+      --muted:#6b7280;
+      --line:#f1d7b7;
+      --shadow:0 10px 30px rgba(0,0,0,.08);
+      --radius:16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", sans-serif;
+      background:
+        radial-gradient(1200px 600px at 20% -10%, rgba(255,179,0,.35), transparent 55%),
+        radial-gradient(900px 600px at 90% 10%, rgba(255,122,0,.25), transparent 50%),
+        var(--bg);
+      color:var(--text);
+    }
+    .wrap{max-width:1100px;margin:28px auto;padding:0 16px;}
+    .topbar{
+      display:flex;gap:12px;align-items:flex-end;justify-content:space-between;
+      margin-bottom:14px;
+    }
+    .title{display:flex;flex-direction:column;gap:4px;}
+    .title h1{font-size:18px;margin:0}
+    .crumb{font-size:12px;color:var(--muted)}
+    .badges{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .badge{
+      font-size:12px;border:1px solid rgba(255,122,0,.25);
+      background:rgba(255,255,255,.85);
+      border-radius:999px;padding:6px 10px;display:inline-flex;gap:6px;align-items:center;
+      box-shadow: 0 8px 18px rgba(255,90,0,.08);
+    }
+    .dot{width:8px;height:8px;border-radius:999px;background:var(--o1)}
+    .dot.off{background:#9ca3af}
+    .grid{
+      display:grid;grid-template-columns: 1.35fr .65fr;
+      gap:14px;
+    }
+    @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
+    .card{
+      background:var(--card);
+      border:1px solid rgba(255,122,0,.18);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .card-h{
+      padding:14px 16px;
+      border-bottom:1px solid rgba(255,122,0,.14);
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      background: linear-gradient(180deg, rgba(255,122,0,.14), rgba(255,179,0,.06));
+    }
+    .card-h h2{font-size:14px;margin:0}
+    .card-b{padding:16px}
+    label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px}
+    textarea, input, select{
+      width:100%;
+      border:1px solid rgba(255,122,0,.20);
+      border-radius:12px;
+      padding:10px 12px;
+      font-size:14px;
+      outline:none;
+      background:#fff;
+    }
+    textarea{min-height:92px;resize:vertical;line-height:1.45}
+    textarea:focus, input:focus, select:focus{
+      border-color: rgba(255,90,0,.55);
+      box-shadow: 0 0 0 4px rgba(255,122,0,.16);
+    }
+    .help{font-size:12px;color:var(--muted);margin-top:6px}
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+    .row > .col{flex:1 1 220px}
+    .sep{height:1px;background:rgba(255,122,0,.14);margin:14px 0}
+    table{width:100%;border-collapse:separate;border-spacing:0}
+    th, td{
+      padding:10px 10px;
+      border-bottom:1px solid rgba(255,122,0,.12);
+      font-size:13px;
+      vertical-align:middle;
+    }
+    th{
+      text-align:left;
+      color:#7c5a3c;
+      font-weight:700;
+      background:rgba(255,179,0,.10);
+      position:sticky;top:0;
+    }
+    .tbl{
+      border:1px solid rgba(255,122,0,.18);
+      border-radius:14px;
+      overflow:auto;
+      max-height:340px;
+      background:#fff;
+    }
+    .tag{
+      font-size:12px;padding:4px 8px;border-radius:999px;
+      border:1px solid rgba(255,122,0,.20);
+      background:rgba(255,255,255,.9);
+      display:inline-flex;gap:6px;align-items:center;
+    }
+    .tag.on{border-color:rgba(255,90,0,.35);background:rgba(255,122,0,.08)}
+    .tag.off{background:#f3f4f6;border-color:rgba(0,0,0,.08)}
+    .pill{
+      font-family:var(--mono);
+      font-size:12px;
+      padding:4px 8px;border-radius:10px;
+      background:rgba(255,179,0,.14);
+      border:1px solid rgba(255,122,0,.18);
+      color:#6b3f1a;
+    }
+    .btns{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+    .btn{
+      border-radius:999px;
+      padding:10px 14px;
+      border:1px solid rgba(255,122,0,.22);
+      background:#fff;
+      cursor:default; /* 静的モックなので */
+      font-size:14px;
+      display:inline-flex;align-items:center;gap:8px;
+    }
+    .btn.primary{
+      border-color:rgba(255,90,0,.40);
+      background:linear-gradient(180deg, var(--o1), var(--o2));
+      color:#fff;
+      box-shadow: 0 12px 26px rgba(255,90,0,.18);
+    }
+    .btn.warn{
+      border-color:rgba(255,179,0,.55);
+      background:rgba(255,179,0,.18);
+      color:#6b3f1a;
+    }
+    .note{
+      font-size:12px;color:var(--muted);
+      background:rgba(255,255,255,.8);
+      border:1px dashed rgba(255,122,0,.22);
+      border-radius:14px;padding:12px;
+    }
+
+    /* Right side preview (LIFF-like) */
+    .preview{
+      border:1px solid rgba(255,122,0,.18);
+      border-radius:18px;
+      overflow:hidden;
+      background:#fff;
+      box-shadow: 0 10px 26px rgba(0,0,0,.06);
+    }
+    .preview .p-top{
+      background: linear-gradient(180deg, var(--o1), var(--o2));
+      color:#fff;padding:14px 14px 12px;
+    }
+    .preview .p-top .small{font-size:12px;opacity:.92}
+    .preview .p-body{padding:14px;background:#fff7ec}
+    .bigoff{font-size:34px;font-weight:900;letter-spacing:.5px;margin:4px 0 0;}
+    .p-card{
+      background:#fff;border:1px solid rgba(255,122,0,.16);border-radius:16px;padding:12px;margin-top:12px;
+    }
+    .p-row{display:flex;justify-content:space-between;gap:12px;align-items:center}
+    .abc{
+      width:34px;height:34px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+      font-weight:900;background:#f3f4f6;color:#6b7280;flex:0 0 auto;
+    }
+    .abc.on{background:rgba(255,122,0,.16);color:#6b3f1a;border:1px solid rgba(255,90,0,.30)}
+    .p-title{font-weight:800}
+    .p-sub{font-size:12px;color:var(--muted);margin-top:2px}
+    .footbtns{display:flex;gap:10px;margin-top:12px}
+    .footbtns .btn{flex:1;justify-content:center}
+    .footbtns .btn.primary{cursor:default}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="title">
+        <div class="crumb">クーポン管理 / 本日の割引ルール（最低ライン：認識合わせ用）</div>
+        <h1>HAYA-TOKU（早得クーポン）管理</h1>
+      </div>
+      <div class="badges">
+        <div class="badge"><span class="dot"></span>公開中</div>
+        <div class="badge">有効期限: <strong>23:59</strong> まで</div>
+        <div class="badge">最終更新: <span class="pill">2026-03-03 11:00</span></div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- Left: Settings -->
+      <div class="card">
+        <div class="card-h">
+          <h2>① 今日の表示文（LIFF上の説明）</h2>
+          <span class="tag on">LIFFに表示</span>
+        </div>
+        <div class="card-b">
+          <label>説明文（LIFFの説明エリア）</label>
+          <textarea>
+本日の割引は「時間が経つほど小さくなる」サンプルです。
+朝30% → 昼20% → 夕10%
+・店頭でこの画面を提示（サンプル）
+・1会計1回まで（サンプル）
+・他クーポン併用不可（サンプル）
+          </textarea>
+          <div class="help">※ この文章が、Fujiさんのフロント（LIFF画面）の説明ブロックに出る想定です。</div>
+
+          <div class="sep"></div>
+
+          <div class="row">
+            <div class="col">
+              <label>状態</label>
+              <select>
+                <option selected>公開（ON）</option>
+                <option>下書き（OFF）</option>
+              </select>
+            </div>
+            <div class="col">
+              <label>本日の有効期限（例）</label>
+              <input type="text" value="23:59" />
+              <div class="help">※ LIFF画面右上の「有効期限 23:59まで」に対応</div>
+            </div>
+          </div>
+
+          <div class="sep"></div>
+
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+            <h2 style="font-size:14px;margin:0">② 時間帯別 割引ルール（A/B/C）</h2>
+            <span class="tag on">A/B/Cカードに対応</span>
+          </div>
+
+          <div class="tbl" style="margin-top:10px;">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:56px;">区分</th>
+                  <th>名称</th>
+                  <th style="width:120px;">開始</th>
+                  <th style="width:120px;">終了</th>
+                  <th style="width:110px;">割引率(%)</th>
+                  <th style="width:90px;">表示順</th>
+                  <th style="width:90px;">有効</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="pill">A</span></td>
+                  <td>朝の早得</td>
+                  <td><input value="00:00" /></td>
+                  <td><input value="10:59" /></td>
+                  <td><input value="30" /></td>
+                  <td><input value="1" /></td>
+                  <td><span class="tag on"><span class="dot"></span>ON</span></td>
+                </tr>
+                <tr>
+                  <td><span class="pill">B</span></td>
+                  <td>昼の早得</td>
+                  <td><input value="11:00" /></td>
+                  <td><input value="16:59" /></td>
+                  <td><input value="20" /></td>
+                  <td><input value="2" /></td>
+                  <td><span class="tag on"><span class="dot"></span>ON</span></td>
+                </tr>
+                <tr>
+                  <td><span class="pill">C</span></td>
+                  <td>夕方の早得</td>
+                  <td><input value="17:00" /></td>
+                  <td><input value="23:59" /></td>
+                  <td><input value="10" /></td>
+                  <td><input value="3" /></td>
+                  <td><span class="tag on"><span class="dot"></span>ON</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="help">※ 入力欄はありますが保存しません（認識合わせ用モック）。</div>
+
+          <div class="sep"></div>
+
+          <h2 style="font-size:14px;margin:0 0 10px;">③ 利用条件（箇条書き）</h2>
+          <div class="row">
+            <div class="col">
+              <label>条件（チェック例）</label>
+              <div class="note">
+                <div><input type="checkbox" checked /> 店頭でこの画面を提示</div>
+                <div style="margin-top:6px;"><input type="checkbox" checked /> 1会計1回まで</div>
+                <div style="margin-top:6px;"><input type="checkbox" checked /> 他クーポン併用不可</div>
+              </div>
+              <div class="help">※ 最低ラインでは「項目が存在する」ことが目的です。</div>
+            </div>
+            <div class="col">
+              <label>備考（任意）</label>
+              <textarea style="min-height:120px;">例）店舗スタッフ向けの注意事項など</textarea>
+            </div>
+          </div>
+
+          <div class="sep"></div>
+
+          <div class="btns">
+            <button class="btn">下書きにする</button>
+            <button class="btn warn">プレビュー（静的）</button>
+            <button class="btn primary">保存（※モック）</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Preview -->
+      <div class="card">
+        <div class="card-h">
+          <h2>LIFF側の見え方（静的プレビュー）</h2>
+          <span class="tag">参考</span>
+        </div>
+        <div class="card-b">
+          <div class="preview">
+            <div class="p-top">
+              <div style="font-weight:900;font-size:15px;">HAYA-TOKU（早得クーポン）</div>
+              <div class="small">LINE内で開いています（OK）</div>
+              <div class="bigoff">20% OFF</div>
+              <div class="small" style="margin-top:6px;">有効期限：<strong>23:59</strong> まで</div>
+            </div>
+
+            <div class="p-body">
+              <div class="note">
+                <div style="font-weight:800;color:#111827;">本日の割引は「時間が経つほど小さくなる」サンプルです。</div>
+                <div style="margin-top:6px;color:#111827;">朝30% → 昼20% → 夕10%</div>
+                <div style="margin-top:8px;">
+                  ・店頭でこの画面を提示（サンプル）<br/>
+                  ・1会計1回まで（サンプル）<br/>
+                  ・他クーポン併用不可（サンプル）
+                </div>
+              </div>
+
+              <div class="p-card">
+                <div class="p-row">
+                  <div style="display:flex;gap:10px;align-items:center;">
+                    <div class="abc">A</div>
+                    <div>
+                      <div class="p-title">朝の早得</div>
+                      <div class="p-sub">早起き特典（例：〜10:59）</div>
+                    </div>
+                  </div>
+                  <div style="font-weight:900;">30% OFF</div>
+                </div>
+              </div>
+
+              <div class="p-card" style="border-color: rgba(255,90,0,.25); background: rgba(255,122,0,.06);">
+                <div class="p-row">
+                  <div style="display:flex;gap:10px;align-items:center;">
+                    <div class="abc on">B</div>
+                    <div>
+                      <div class="p-title">昼の早得</div>
+                      <div class="p-sub">お昼前後（例：11:00〜16:59）</div>
+                    </div>
+                  </div>
+                  <div style="font-weight:900;">20% OFF</div>
+                </div>
+              </div>
+
+              <div class="p-card">
+                <div class="p-row">
+                  <div style="display:flex;gap:10px;align-items:center;">
+                    <div class="abc">C</div>
+                    <div>
+                      <div class="p-title">夕方の早得</div>
+                      <div class="p-sub">夕方以降（例：17:00〜）</div>
+                    </div>
+                  </div>
+                  <div style="font-weight:900;">10% OFF</div>
+                </div>
+              </div>
+
+              <div class="sep"></div>
+
+              <div class="note">
+                <div><strong>状態：</strong>ログイン済：LINE内で表示中</div>
+              </div>
+
+              <div class="footbtns">
+                <button class="btn primary">このクーポンを使う（サンプル）</button>
+                <button class="btn">閉じる</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="sep"></div>
+
+          <div class="note">
+            <strong>このモックの狙い：</strong><br/>
+            管理画面の「どの項目」が、LIFF画面の「どの表示」に対応するかを共有するための最低ラインです。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

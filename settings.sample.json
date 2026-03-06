@@ -1,0 +1,62 @@
+{
+  "meta": {
+    "version": "🍊ver0.8",
+    "updatedAt": "2026-03-06T00:00:00+09:00"
+  },
+  "app": {
+    "documentTitle": "早得クーポン | HAYA-TOKU（🍊ver）",
+    "displayName": "HAYA-TOKU（🍊ver）"
+  },
+  "runtime": {
+    "liffId": "2009179515-rJ1LaY8l",
+    "useConfirmSeconds": 10,
+    "cancelPolicy": "confirmInClient"
+  },
+  "coupon": {
+    "title": "今日の早得",
+    "description": "本日の割引は「時間が経つほど小さくなる」サンプルです。\n朝30% → 昼20% → 夕10%",
+    "status": "公開中",
+    "deadlineText": "23:59 まで",
+    "rules": [
+      "店頭でこの画面を提示（サンプル）",
+      "1会計1回まで（サンプル）",
+      "他クーポン併用不可（サンプル）"
+    ],
+    "notes": "例）店舗スタッフ向けの注意事項など"
+  },
+  "steps": [
+    {
+      "id": "step-a",
+      "code": "A",
+      "label": "朝の早得",
+      "start": "00:00",
+      "end": "10:59",
+      "rate": 30,
+      "sort": 1,
+      "enabled": true
+    },
+    {
+      "id": "step-b",
+      "code": "B",
+      "label": "昼の早得",
+      "start": "11:00",
+      "end": "16:59",
+      "rate": 20,
+      "sort": 2,
+      "enabled": true
+    },
+    {
+      "id": "step-c",
+      "code": "C",
+      "label": "夕方の早得",
+      "start": "17:00",
+      "end": "23:59",
+      "rate": 10,
+      "sort": 3,
+      "enabled": true
+    }
+  ],
+  "share": {
+    "text": "早得クーポン（サンプル）を共有します"
+  }
+}
